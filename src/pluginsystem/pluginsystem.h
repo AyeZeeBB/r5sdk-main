@@ -7,6 +7,7 @@ class CModAppSystemGroup;
 class CServer;
 class CClient;
 struct user_creds_s;
+enum class HostStates_t : int;
 
 template<typename T>
 class CPluginCallbackList
@@ -124,6 +125,8 @@ public:
 
 	CREATE_PLUGIN_CALLBACK(CreateFn, bool(*)(CModAppSystemGroup*), GetCreateCallbacks, createCallbacks);
 	CREATE_PLUGIN_CALLBACK(ConnectClientFn, bool(*)(CServer*, CClient*, user_creds_s*), GetConnectClientCallbacks, connectClientCallbacks);
+	CREATE_PLUGIN_CALLBACK(HostStateChangeFn, void(*)(HostStates_t, HostStates_t), GetHostStateChangeCallbacks, hoststateChangeCallbacks);
+	CREATE_PLUGIN_CALLBACK(FatalScriptErrorOccuredFn, void(*)(const char*), GetFatalScriptErrorCallbacks, fatalScriptErrorCallbacks);
 
 #undef CREATE_PLUGIN_CALLBACK
 

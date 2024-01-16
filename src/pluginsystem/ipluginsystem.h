@@ -14,7 +14,9 @@ struct PluginHelpWithAnything_t
 	enum class ePluginCallback : int16_t
 	{
 		CModAppSystemGroup_Create = 0,
-		CServer_ConnectClient
+		CServer_ConnectClient,
+		HostStateChanged,
+		FatalScriptErrorOccured
 	};
 
 	ePluginHelp m_nHelpID;

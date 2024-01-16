@@ -172,6 +172,16 @@ void CPluginSystem::RemoveCallback(PluginHelpWithAnything_t* help)
 		REMOVE_PLUGIN_CALLBACK(ConnectClientFn, GetConnectClientCallbacks(), help->m_pFunction);
 		break;
 	}
+	case PluginHelpWithAnything_t::ePluginCallback::HostStateChanged:
+	{
+		ADD_PLUGIN_CALLBACK(HostStateChangeFn, GetHostStateChangeCallbacks(), help->m_pFunction);
+		break;
+	}
+	case PluginHelpWithAnything_t::ePluginCallback::FatalScriptErrorOccured:
+	{
+		ADD_PLUGIN_CALLBACK(FatalScriptErrorOccuredFn, GetFatalScriptErrorCallbacks(), help->m_pFunction);
+		break;
+	}
 	default:
 		break;
 	}
@@ -200,6 +210,16 @@ void* CPluginSystem::HelpWithAnything(PluginHelpWithAnything_t* help)
 	case PluginHelpWithAnything_t::ePluginHelp::PLUGIN_UNREGISTER_CALLBACK:
 	{
 		RemoveCallback(help);
+		break;
+	}
+	case PluginHelpWithAnything_t::ePluginCallback::HostStateChanged:
+	{
+		REMOVE_PLUGIN_CALLBACK(HostStateChangeFn, GetHostStateChangeCallbacks(), help->m_pFunction);
+		break;
+	}
+	case PluginHelpWithAnything_t::ePluginCallback::FatalScriptErrorOccured:
+	{
+		REMOVE_PLUGIN_CALLBACK(FatalScriptErrorOccuredFn, GetFatalScriptErrorCallbacks(), help->m_pFunction);
 		break;
 	}
 	default:
