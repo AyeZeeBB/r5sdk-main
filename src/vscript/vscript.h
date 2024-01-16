@@ -20,6 +20,7 @@ inline SQBool(*v_Script_PrecompileServerScripts)(CSquirrelVM* vm /*This paramete
 inline void(*v_Script_SetServerPrecompiler)(SQCONTEXT ctx, RSON::Node_t* rson);
 inline SQBool(*v_Script_PrecompileClientScripts)(CSquirrelVM* vm);
 inline void(*v_Script_SetClientPrecompiler)(SQCONTEXT ctx, RSON::Node_t* rson);
+inline void(*v_Script_HandleFatalScriptError)(HSQUIRRELVM v, const SQChar* contextName, bool isCompileTime_maybe);
 
 CSquirrelVM* Script_GetScriptHandle(const SQCONTEXT context);
 RSON::Node_t* Script_LoadScriptList(const SQChar* rsonfile);
@@ -40,6 +41,7 @@ class VScript : public IDetour
 		LogFunAdr("Script_SetServerCompiler", v_Script_SetServerPrecompiler);
 		LogFunAdr("Script_PrecompileClientInit", v_Script_PrecompileClientScripts);
 		LogFunAdr("Script_SetClientCompiler", v_Script_SetClientPrecompiler);
+		LogFunAdr("Script_HandleFatalScriptError", v_Script_HandleFatalScriptError);
 	}
 	virtual void GetFun(void) const
 	{
@@ -51,6 +53,9 @@ class VScript : public IDetour
 		g_GameDll.FindPatternSIMD("E8 ?? ?? ?? ?? 48 8D 84 24 ?? ?? ?? ?? 44 89 64 24 ?? 4C 89 64 24 ?? 4C 8D 8C 24 ?? ?? ?? ?? 4C 8B C6").FollowNearCallSelf().GetPtr(v_Script_SetClientPrecompiler);
 
 		g_GameDll.FindPatternSIMD("4C 89 4C 24 ?? 55 41 56").GetPtr(v_Script_ParseScriptList);
+		
+		//I am not sure what this is supposed to be called
+		g_GameDll.FindPatternSIMD("40 57 48 81 EC ? ? ? ? 4C 8B D9").GetPtr(v_Script_HandleFatalScriptError);
 	}
 	virtual void GetVar(void) const { }
 	virtual void GetCon(void) const { }

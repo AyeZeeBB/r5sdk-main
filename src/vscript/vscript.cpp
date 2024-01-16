@@ -11,6 +11,7 @@
 #include "vscript/vscript.h"
 #include "game/shared/vscript_shared.h"
 #include "pluginsystem/modsystem.h"
+#include "pluginsystem/pluginsystem.h"
 
 //---------------------------------------------------------------------------------
 // Purpose: Returns the script VM pointer by context
@@ -170,6 +171,12 @@ void Script_Execute(const SQChar* code, const SQCONTEXT context)
 	}
 }
 
+void Script_HandleFatalScriptError(HSQUIRRELVM v, const SQChar* contextName, bool isCompileTime_maybe)
+{
+	CALL_PLUGIN_CALLBACKS(g_pPluginSystem->GetFatalScriptErrorCallbacks(), (const char*)contextName);
+	v_Script_HandleFatalScriptError(v, contextName, isCompileTime_maybe);
+}
+
 //---------------------------------------------------------------------------------
 void VScript::Detour(const bool bAttach) const
 {
@@ -177,4 +184,5 @@ void VScript::Detour(const bool bAttach) const
 	DetourSetup(&v_Script_LoadScriptFile, &Script_LoadScriptFile, bAttach);
 	DetourSetup(&v_Script_PrecompileServerScripts, &Script_PrecompileServerScripts, bAttach);
 	DetourSetup(&v_Script_PrecompileClientScripts, &Script_PrecompileClientScripts, bAttach);
+	DetourSetup(&v_Script_HandleFatalScriptError, &Script_HandleFatalScriptError, bAttach);
 }
