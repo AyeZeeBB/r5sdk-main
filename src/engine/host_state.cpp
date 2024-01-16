@@ -51,6 +51,7 @@
 #include "public/edict.h"
 #ifndef CLIENT_DLL
 #include "game/server/gameinterface.h"
+#include "pluginsystem/pluginsystem.h"
 #endif // !CLIENT_DLL
 #include "game/shared/vscript_shared.h"
 
@@ -206,6 +207,13 @@ void CHostState::FrameUpdate(CHostState* pHostState, double flCurrentTime, float
 				break;
 			}
 			}
+
+#ifdef DEDICATED
+			if (oldState != g_pHostState->m_iNextState)
+			{
+				CALL_PLUGIN_CALLBACKS(g_pPluginSystem->GetHostStateChangeCallbacks(), g_pHostState->m_iNextState, oldState);
+			}
+#endif // DEDICATED
 
 		} while (
 			  (oldState != HostStates_t::HS_RUN || g_pHostState->m_iNextState == HostStates_t::HS_LOAD_GAME && single_frame_shutdown_for_reload->GetBool())
