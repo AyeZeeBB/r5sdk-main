@@ -15,7 +15,7 @@
 #include "pluginsdk.h"
 #include "protc/servercontroller.pb.h"
 #include "tier0/commandline.h"
-#include "communication/message_handler.h"
+#include "communication/messagehandler.h"
 #include "pluginsdk.h"
 
 inline STARTUPINFO startupInfo = { 0 };

@@ -11,8 +11,8 @@ add_sources( SOURCE_GROUP "Protc"
 add_sources( SOURCE_GROUP "Communication"
     "communication/sharedqueue.cpp"
     "communication/sharedqueue.h"
-    "communication/message_handler.cpp"
-    "communication/message_handler.h"   
+    "communication/messagehandler.cpp"
+    "communication/messagehandler.h"   
 )
 
 add_sources( SOURCE_GROUP "Core"
