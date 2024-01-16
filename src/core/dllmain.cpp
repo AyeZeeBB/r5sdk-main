@@ -88,6 +88,8 @@ void SDK_Init()
 
 #ifndef DEDICATED
     if (CommandLine()->CheckParm("-wconsole"))
+#else 
+    if (!CommandLine()->CheckParm("-nowindow"))
 #endif // !DEDICATED
     {
         Console_Init(bAnsiColor);

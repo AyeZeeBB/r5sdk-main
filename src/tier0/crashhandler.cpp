@@ -6,6 +6,7 @@
 #include "tier0/binstream.h"
 #include "tier0/cpu.h"
 #include "tier0/crashhandler.h"
+#include "tier0/commandline.h"
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -608,7 +609,11 @@ long __stdcall BottomLevelExceptionFilter(EXCEPTION_POINTERS* pExceptionInfo)
 	g_CrashHandler->FormatBuildInfo();
 
 	g_CrashHandler->WriteFile();
-	g_CrashHandler->CreateMessageProcess(); // Display the message to the user.
+
+#ifdef DEDICATED
+	if (!CommandLine()->CheckParm("-nowindow"))
+		g_CrashHandler->CreateMessageProcess(); // Display the message to the user.
+#endif // DEDICATED
 
 	// Don't end, just unlock the mutex so the next call kills the process.
 	g_CrashHandler->Unlock();
