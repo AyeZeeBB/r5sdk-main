@@ -66,7 +66,6 @@ void OnHostStateChanged(HostStates_t newState, HostStates_t oldState)
 	if (update.SerializeToArray(buff, buffSize))
 	{
 		g_pMessageLink->Tx(buff, buffSize);
-		//WriteFile(startupInfo.hStdOutput, buff, buffSize, &bytesWritten, NULL);
 	}
 
 	delete[] buff;
@@ -84,7 +83,6 @@ void OnFatalScriptError(const char* contextName)
 	if (update.SerializeToArray(buff, buffSize))
 	{
 		g_pMessageLink->Tx(buff, buffSize);
-		//WriteFile(startupInfo.hStdOutput, buff, buffSize, &bytesWritten, NULL);
 	}
 
 	delete[] buff;
