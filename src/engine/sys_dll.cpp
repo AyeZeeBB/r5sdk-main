@@ -35,6 +35,10 @@
 #include "vstdlib/keyvaluessystem.h"
 #include "engine/sys_dll.h"
 
+#ifdef DEDICATED
+#include "engine/server/servercontroller.h"
+#endif // DEDICATED
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -96,6 +100,9 @@ bool CModAppSystemGroup::StaticCreate(CModAppSystemGroup* pModAppSystemGroup)
 #ifdef DEDICATED
 	pModAppSystemGroup->SetServerOnly();
 	*m_bIsDedicated = true;
+
+	EXPOSE_INTERFACE_FN((InstantiateInterfaceFn)ServerController, CServerController, SERVER_CONTROLLER_INTERFACE_VERSION);
+	EXPOSE_INTERFACE_FN((InstantiateInterfaceFn)CommandLine, CCommandLine, "VCommmandLine");
 #endif // DEDICATED
 
 	EXPOSE_INTERFACE_FN((InstantiateInterfaceFn)PluginSystem, CPluginSystem, INTERFACEVERSION_PLUGINSYSTEM);

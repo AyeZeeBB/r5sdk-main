@@ -119,6 +119,8 @@ add_sources( SOURCE_GROUP "Server"
     "server/vengineserver_impl.h"
     "server/datablock_sender.cpp"
     "server/datablock_sender.h"
+    "server/servercontroller.cpp"
+    "server/servercontroller.h"
 )
 endif()
 
@@ -218,6 +220,7 @@ add_sources( SOURCE_GROUP "Public"
     "${ENGINE_SOURCE_DIR}/public/server_class.h"
     "${ENGINE_SOURCE_DIR}/public/networkvar.h"
     "${ENGINE_SOURCE_DIR}/public/playerstate.h"
+    "${ENGINE_SOURCE_DIR}/public/iservercontroller.h"
 
     # These probably need to go to 'bsplib' if we ever create that project.
     "${ENGINE_SOURCE_DIR}/public/bspflags.h"
