@@ -3,6 +3,18 @@ add_module( "shared_lib" "PluginSDK" "vpc" ${FOLDER_CONTEXT} TRUE TRUE )
 
 start_sources()
 
+add_sources( SOURCE_GROUP "Protc" 
+    "protc/servercontroller.pb.cc"
+    "protc/servercontroller.pb.h"
+)
+
+add_sources( SOURCE_GROUP "Communication"
+    "communication/sharedqueue.cpp"
+    "communication/sharedqueue.h"
+    "communication/message_handler.cpp"
+    "communication/message_handler.h"   
+)
+
 add_sources( SOURCE_GROUP "Core"
     "dllmain.cpp"
     "ifactory.h"
