@@ -1,5 +1,9 @@
 #include "messagehandler.h"
+#include "shmem.h"
 #include <thread>
+
+#define QUEUE_SIZE 16
+#define QUEUE_NODE_CAPACITY 128
 
 int CMessage::CreateServer()
 {
@@ -8,113 +12,54 @@ int CMessage::CreateServer()
 	saAttr.bInheritHandle = TRUE;
 	saAttr.lpSecurityDescriptor = NULL;
 
-	m_linkMetaData.queueSize.QuadPart = CSharedQueue::NewQueueSize(16);
+	m_linkMetaData.m_queueBufferSize = CSharedQueue::NewQueueSize(QUEUE_SIZE, QUEUE_NODE_CAPACITY);
 
 	//Create the tx buffer
 	m_pTxQueue = new CSharedQueue();
-
-	const HANDLE txFileMap = CreateFileMappingA(INVALID_HANDLE_VALUE, &saAttr, PAGE_READWRITE, m_linkMetaData.queueSize.HighPart, m_linkMetaData.queueSize.LowPart, NULL);
-
-	if (!txFileMap)
-		return 1;
-
-	Queue* const txBuffView = static_cast<Queue* const>(MapViewOfFile(txFileMap, FILE_MAP_ALL_ACCESS, 0, 0, m_linkMetaData.queueSize.QuadPart));
-
-	if (!txBuffView)
-	{
-		CloseHandle(txFileMap);
-		return 1;
-	}
-
-	m_pTxQueue->NewQueue(txBuffView, 16);
-	m_linkMetaData.txHandle = txFileMap;
+	std::shared_ptr<CShMem> txShMem = std::make_shared<CShMem>(m_linkMetaData.m_queueBufferSize, PAGE_READWRITE);
+	std::unique_ptr<CShMemView> txShMemView = std::make_unique<CShMemView>(txShMem, FILE_MAP_ALL_ACCESS);
+	m_pTxQueue->NewQueue(std::move(txShMemView), QUEUE_SIZE, QUEUE_NODE_CAPACITY);
+	m_linkMetaData.m_txHandle.CopyFrom(txShMem->GetHandle());
 
 	//Create the rx buffer
 	m_pRxQueue = new CSharedQueue();
+	std::shared_ptr<CShMem> rxShMem = std::make_shared<CShMem>(m_linkMetaData.m_queueBufferSize, PAGE_READWRITE);
+	std::unique_ptr<CShMemView> rxShMemView = std::make_unique<CShMemView>(rxShMem, FILE_MAP_ALL_ACCESS);
+	m_pRxQueue->NewQueue(std::move(rxShMemView), QUEUE_SIZE, QUEUE_NODE_CAPACITY);
+	m_linkMetaData.m_rxHandle.CopyFrom(rxShMem->GetHandle());
 
-	const HANDLE rxFileMap = CreateFileMappingA(INVALID_HANDLE_VALUE, &saAttr, PAGE_READWRITE, m_linkMetaData.queueSize.HighPart, m_linkMetaData.queueSize.LowPart, NULL);
-
-	if (!rxFileMap)
-		return 1;
-
-	Queue* const rxBuffView = static_cast<Queue* const>(MapViewOfFile(rxFileMap, FILE_MAP_ALL_ACCESS, 0, 0, m_linkMetaData.queueSize.QuadPart));
-
-	if (!rxBuffView)
-	{
-		CloseHandle(rxFileMap);
-		return 1;
-	}
-
-	m_pRxQueue->NewQueue(rxBuffView, 16);
-	m_linkMetaData.rxHandle = rxFileMap;
-	m_linkMetaData.readReady = CreateEventA(&saAttr, FALSE, FALSE, NULL);
+	m_linkMetaData.m_readReadyEventHandle = CreateEventA(&saAttr, FALSE, FALSE, NULL);
 
 	//Create the misc data section
 	Meta metaData = m_linkMetaData;
 
 	//Swap rx and tx around for client
-	metaData.rxHandle = m_linkMetaData.txHandle;
-	metaData.txHandle = m_linkMetaData.rxHandle;
+	metaData.m_rxHandle.CopyFrom(m_linkMetaData.m_txHandle);
+	metaData.m_txHandle.CopyFrom(m_linkMetaData.m_rxHandle);
+	metaData.m_readReadyEventHandle.CopyFrom(m_linkMetaData.m_readReadyEventHandle);
 
-	LARGE_INTEGER metaBuffSize;
-	metaBuffSize.QuadPart = sizeof(Meta);
+	std::shared_ptr<CShMem> metaDataSharedMem = std::make_shared<CShMem>(sizeof(Meta), PAGE_READWRITE);
+	std::unique_ptr<CShMemView> metaDataSharedMemView = std::make_unique<CShMemView>(metaDataSharedMem, FILE_MAP_WRITE);
 
-	const HANDLE hMetaDataMap = CreateFileMappingA(INVALID_HANDLE_VALUE, &saAttr, PAGE_READWRITE, metaBuffSize.HighPart, metaBuffSize.LowPart, NULL);
-
-	if (!hMetaDataMap)
-	{
-		CloseHandle(m_linkMetaData.rxHandle);
-		CloseHandle(m_linkMetaData.txHandle);
-		return 1;
-	}
-
-	Meta* const pBuff = static_cast<Meta* const>(MapViewOfFile(hMetaDataMap, FILE_MAP_ALL_ACCESS, 0, 0, metaBuffSize.QuadPart));
-
-	if (!pBuff)
-	{
-		CloseHandle(hMetaDataMap);
-		CloseHandle(m_linkMetaData.rxHandle);
-		CloseHandle(m_linkMetaData.txHandle);
-		return 1;
-	}
-
-	m_linkMetaDataHandle = hMetaDataMap;
-	memcpy(pBuff, &metaData, sizeof(Meta));
-
-	UnmapViewOfFile(pBuff);
+	m_linkMetaDataHandle.Take(metaDataSharedMem->GetHandle());
+	metaDataSharedMemView->Write(&metaData, sizeof(Meta));
 
 	std::thread(ReadThread, this).detach();
 
 	return 0;
 }
 
-int CMessage::ConnectClient(HANDLE hMetaData)
-{
-	const Meta* const pMetaData = static_cast<const Meta* const>(MapViewOfFile(hMetaData, FILE_MAP_ALL_ACCESS, 0, 0, 0));
+int CMessage::ConnectClient(const CHandle& hMetaData)
+{	
+	std::shared_ptr<CShMem> metaDataFile = std::make_shared<CShMem>(hMetaData, sizeof(Meta));
+	std::unique_ptr<CShMemView> metaDataFileView = std::make_unique<CShMemView>(metaDataFile, FILE_MAP_READ);
+	memcpy(&m_linkMetaData, metaDataFileView->GetPtr(), sizeof(Meta));
 
-	if (!pMetaData)
-		return 1;
+	std::shared_ptr<CShMem> txDataFile = std::make_shared<CShMem>(m_linkMetaData.m_txHandle, m_linkMetaData.m_queueBufferSize);
+	m_pTxQueue = new CSharedQueue(std::make_unique<CShMemView>(txDataFile, FILE_MAP_ALL_ACCESS));
 
-	memcpy(&m_linkMetaData, pMetaData, sizeof(Meta));
-
-	UnmapViewOfFile(pMetaData);
-
-	Queue* const pTxQueue = static_cast<Queue* const>(MapViewOfFile(m_linkMetaData.txHandle, FILE_MAP_ALL_ACCESS, 0, 0, m_linkMetaData.queueSize.QuadPart));
-	m_pTxQueue = new CSharedQueue(pTxQueue);
-
-	if (!m_pTxQueue)
-	{
-		return 1;
-	}
-
-	Queue* const pRxQueue = static_cast<Queue* const>(MapViewOfFile(m_linkMetaData.rxHandle, FILE_MAP_ALL_ACCESS, 0, 0, m_linkMetaData.queueSize.QuadPart));
-	m_pRxQueue = new CSharedQueue(pRxQueue);
-
-	if (!m_pRxQueue)
-	{
-		UnmapViewOfFile(m_pRxQueue);
-		return 1;
-	}
+	std::shared_ptr<CShMem> rxDataFile = std::make_shared<CShMem>(m_linkMetaData.m_rxHandle, m_linkMetaData.m_queueBufferSize);
+	m_pRxQueue = new CSharedQueue(std::make_unique<CShMemView>(rxDataFile, FILE_MAP_ALL_ACCESS));
 
 	std::thread(ReadThread, this).detach();
 	return 0;
@@ -126,7 +71,7 @@ size_t CMessage::Tx(const void* pBuff, size_t nSize) const
 		return 0;
 
 	m_pTxQueue->PushBack(pBuff, nSize);
-	SetEvent(m_linkMetaData.readReady);
+	SetEvent(m_linkMetaData.m_readReadyEventHandle.GetHandle());
 
 	return nSize;
 }
@@ -137,7 +82,7 @@ void CMessage::ReadThread(CMessage* thisp)
 
 	for (;;)
 	{
-		WaitForSingleObject(thisp->m_linkMetaData.readReady, 1 * 1000);
+		WaitForSingleObject(thisp->m_linkMetaData.m_readReadyEventHandle.GetHandle(), 1 * 1000);
 
 		assert(thisp != nullptr);
 

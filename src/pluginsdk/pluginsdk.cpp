@@ -153,6 +153,8 @@ bool CPluginSDK::InitSDK()
 		return false;
 	}
 
+	g_pServerController = m_ServerController;
+
 	RegisterCallbacks();
 
 	startupInfo.cb = sizeof(startupInfo);
@@ -162,7 +164,7 @@ bool CPluginSDK::InitSDK()
 	if (!commData)
 		exit(EXIT_FAILURE);
 
-	HANDLE comm = reinterpret_cast<HANDLE>(strtoull(commData, nullptr, 16));
+	CHandle comm(reinterpret_cast<HANDLE>(strtoull(commData, nullptr, 16)), false);
 
 	g_pMessageLink = new CMessage();
 	g_pMessageLink->SetReadCallback(OnMainMsgRecieve, nullptr);

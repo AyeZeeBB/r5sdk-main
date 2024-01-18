@@ -12,7 +12,8 @@ add_sources( SOURCE_GROUP "Communication"
     "communication/sharedqueue.cpp"
     "communication/sharedqueue.h"
     "communication/messagehandler.cpp"
-    "communication/messagehandler.h"   
+    "communication/messagehandler.h"
+    "communication/shmem.h"
 )
 
 add_sources( SOURCE_GROUP "Core"
