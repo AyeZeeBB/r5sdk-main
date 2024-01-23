@@ -18,243 +18,40 @@ namespace _pb = ::PROTOBUF_NAMESPACE_ID;
 namespace _pbi = _pb::internal;
 
 namespace servercontroller {
-PROTOBUF_CONSTEXPR ServerUpdate::ServerUpdate(
+PROTOBUF_CONSTEXPR request::request(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.type_)*/0
+    /*decltype(_impl_.args_)*/{}
+  , /*decltype(_impl_.request_num_)*/0u
+  , /*decltype(_impl_.request_type_)*/0
+  , /*decltype(_impl_.request_sub_type_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
-struct ServerUpdateDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR ServerUpdateDefaultTypeInternal()
+struct requestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR requestDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
-  ~ServerUpdateDefaultTypeInternal() {}
+  ~requestDefaultTypeInternal() {}
   union {
-    ServerUpdate _instance;
+    request _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ServerUpdateDefaultTypeInternal _ServerUpdate_default_instance_;
-PROTOBUF_CONSTEXPR PlayerModerationMessage::PlayerModerationMessage(
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 requestDefaultTypeInternal _request_default_instance_;
+PROTOBUF_CONSTEXPR response::response(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.identifier_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.identifier_type_)*/0
+    /*decltype(_impl_.is_unsolicited_response_)*/false
+  , /*decltype(_impl_.response_num_)*/0u
+  , /*decltype(_impl_.response_type_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
-struct PlayerModerationMessageDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR PlayerModerationMessageDefaultTypeInternal()
+struct responseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR responseDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
-  ~PlayerModerationMessageDefaultTypeInternal() {}
+  ~responseDefaultTypeInternal() {}
   union {
-    PlayerModerationMessage _instance;
+    response _instance;
   };
 };
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PlayerModerationMessageDefaultTypeInternal _PlayerModerationMessage_default_instance_;
-PROTOBUF_CONSTEXPR ServerControlMessage::ServerControlMessage(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.type_)*/0
-  , /*decltype(_impl_._cached_size_)*/{}} {}
-struct ServerControlMessageDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR ServerControlMessageDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
-  ~ServerControlMessageDefaultTypeInternal() {}
-  union {
-    ServerControlMessage _instance;
-  };
-};
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ServerControlMessageDefaultTypeInternal _ServerControlMessage_default_instance_;
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 responseDefaultTypeInternal _response_default_instance_;
 }  // namespace servercontroller
 namespace servercontroller {
-bool ServerUpdate_MESSAGE_TYPE_IsValid(int value) {
-  switch (value) {
-    case 0:
-    case 1:
-    case 2:
-      return true;
-    default:
-      return false;
-  }
-}
-
-static ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<std::string> ServerUpdate_MESSAGE_TYPE_strings[3] = {};
-
-static const char ServerUpdate_MESSAGE_TYPE_names[] =
-  "FATAL_SCRIPT_ERROR"
-  "HOST_STATE_CHANGE"
-  "MESSAGE_UNSPECIFIED";
-
-static const ::PROTOBUF_NAMESPACE_ID::internal::EnumEntry ServerUpdate_MESSAGE_TYPE_entries[] = {
-  { {ServerUpdate_MESSAGE_TYPE_names + 0, 18}, 2 },
-  { {ServerUpdate_MESSAGE_TYPE_names + 18, 17}, 1 },
-  { {ServerUpdate_MESSAGE_TYPE_names + 35, 19}, 0 },
-};
-
-static const int ServerUpdate_MESSAGE_TYPE_entries_by_number[] = {
-  2, // 0 -> MESSAGE_UNSPECIFIED
-  1, // 1 -> HOST_STATE_CHANGE
-  0, // 2 -> FATAL_SCRIPT_ERROR
-};
-
-const std::string& ServerUpdate_MESSAGE_TYPE_Name(
-    ServerUpdate_MESSAGE_TYPE value) {
-  static const bool dummy =
-      ::PROTOBUF_NAMESPACE_ID::internal::InitializeEnumStrings(
-          ServerUpdate_MESSAGE_TYPE_entries,
-          ServerUpdate_MESSAGE_TYPE_entries_by_number,
-          3, ServerUpdate_MESSAGE_TYPE_strings);
-  (void) dummy;
-  int idx = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumName(
-      ServerUpdate_MESSAGE_TYPE_entries,
-      ServerUpdate_MESSAGE_TYPE_entries_by_number,
-      3, value);
-  return idx == -1 ? ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString() :
-                     ServerUpdate_MESSAGE_TYPE_strings[idx].get();
-}
-bool ServerUpdate_MESSAGE_TYPE_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, ServerUpdate_MESSAGE_TYPE* value) {
-  int int_value;
-  bool success = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumValue(
-      ServerUpdate_MESSAGE_TYPE_entries, 3, name, &int_value);
-  if (success) {
-    *value = static_cast<ServerUpdate_MESSAGE_TYPE>(int_value);
-  }
-  return success;
-}
-#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-constexpr ServerUpdate_MESSAGE_TYPE ServerUpdate::MESSAGE_UNSPECIFIED;
-constexpr ServerUpdate_MESSAGE_TYPE ServerUpdate::HOST_STATE_CHANGE;
-constexpr ServerUpdate_MESSAGE_TYPE ServerUpdate::FATAL_SCRIPT_ERROR;
-constexpr ServerUpdate_MESSAGE_TYPE ServerUpdate::MESSAGE_TYPE_MIN;
-constexpr ServerUpdate_MESSAGE_TYPE ServerUpdate::MESSAGE_TYPE_MAX;
-constexpr int ServerUpdate::MESSAGE_TYPE_ARRAYSIZE;
-#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-bool PlayerModerationMessage_ACTION_TYPE_IsValid(int value) {
-  switch (value) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-      return true;
-    default:
-      return false;
-  }
-}
-
-static ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<std::string> PlayerModerationMessage_ACTION_TYPE_strings[4] = {};
-
-static const char PlayerModerationMessage_ACTION_TYPE_names[] =
-  "ACTION_UNSPECIFIED"
-  "BAN"
-  "KICK"
-  "UNBAN";
-
-static const ::PROTOBUF_NAMESPACE_ID::internal::EnumEntry PlayerModerationMessage_ACTION_TYPE_entries[] = {
-  { {PlayerModerationMessage_ACTION_TYPE_names + 0, 18}, 0 },
-  { {PlayerModerationMessage_ACTION_TYPE_names + 18, 3}, 2 },
-  { {PlayerModerationMessage_ACTION_TYPE_names + 21, 4}, 1 },
-  { {PlayerModerationMessage_ACTION_TYPE_names + 25, 5}, 3 },
-};
-
-static const int PlayerModerationMessage_ACTION_TYPE_entries_by_number[] = {
-  0, // 0 -> ACTION_UNSPECIFIED
-  2, // 1 -> KICK
-  1, // 2 -> BAN
-  3, // 3 -> UNBAN
-};
-
-const std::string& PlayerModerationMessage_ACTION_TYPE_Name(
-    PlayerModerationMessage_ACTION_TYPE value) {
-  static const bool dummy =
-      ::PROTOBUF_NAMESPACE_ID::internal::InitializeEnumStrings(
-          PlayerModerationMessage_ACTION_TYPE_entries,
-          PlayerModerationMessage_ACTION_TYPE_entries_by_number,
-          4, PlayerModerationMessage_ACTION_TYPE_strings);
-  (void) dummy;
-  int idx = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumName(
-      PlayerModerationMessage_ACTION_TYPE_entries,
-      PlayerModerationMessage_ACTION_TYPE_entries_by_number,
-      4, value);
-  return idx == -1 ? ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString() :
-                     PlayerModerationMessage_ACTION_TYPE_strings[idx].get();
-}
-bool PlayerModerationMessage_ACTION_TYPE_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, PlayerModerationMessage_ACTION_TYPE* value) {
-  int int_value;
-  bool success = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumValue(
-      PlayerModerationMessage_ACTION_TYPE_entries, 4, name, &int_value);
-  if (success) {
-    *value = static_cast<PlayerModerationMessage_ACTION_TYPE>(int_value);
-  }
-  return success;
-}
-#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-constexpr PlayerModerationMessage_ACTION_TYPE PlayerModerationMessage::ACTION_UNSPECIFIED;
-constexpr PlayerModerationMessage_ACTION_TYPE PlayerModerationMessage::KICK;
-constexpr PlayerModerationMessage_ACTION_TYPE PlayerModerationMessage::BAN;
-constexpr PlayerModerationMessage_ACTION_TYPE PlayerModerationMessage::UNBAN;
-constexpr PlayerModerationMessage_ACTION_TYPE PlayerModerationMessage::ACTION_TYPE_MIN;
-constexpr PlayerModerationMessage_ACTION_TYPE PlayerModerationMessage::ACTION_TYPE_MAX;
-constexpr int PlayerModerationMessage::ACTION_TYPE_ARRAYSIZE;
-#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-bool PlayerModerationMessage_IDENTIFIER_TYPE_IsValid(int value) {
-  switch (value) {
-    case 0:
-    case 1:
-    case 2:
-      return true;
-    default:
-      return false;
-  }
-}
-
-static ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<std::string> PlayerModerationMessage_IDENTIFIER_TYPE_strings[3] = {};
-
-static const char PlayerModerationMessage_IDENTIFIER_TYPE_names[] =
-  "IDENTIFIER_UNSPECIFIED"
-  "IP"
-  "UID";
-
-static const ::PROTOBUF_NAMESPACE_ID::internal::EnumEntry PlayerModerationMessage_IDENTIFIER_TYPE_entries[] = {
-  { {PlayerModerationMessage_IDENTIFIER_TYPE_names + 0, 22}, 0 },
-  { {PlayerModerationMessage_IDENTIFIER_TYPE_names + 22, 2}, 2 },
-  { {PlayerModerationMessage_IDENTIFIER_TYPE_names + 24, 3}, 1 },
-};
-
-static const int PlayerModerationMessage_IDENTIFIER_TYPE_entries_by_number[] = {
-  0, // 0 -> IDENTIFIER_UNSPECIFIED
-  2, // 1 -> UID
-  1, // 2 -> IP
-};
-
-const std::string& PlayerModerationMessage_IDENTIFIER_TYPE_Name(
-    PlayerModerationMessage_IDENTIFIER_TYPE value) {
-  static const bool dummy =
-      ::PROTOBUF_NAMESPACE_ID::internal::InitializeEnumStrings(
-          PlayerModerationMessage_IDENTIFIER_TYPE_entries,
-          PlayerModerationMessage_IDENTIFIER_TYPE_entries_by_number,
-          3, PlayerModerationMessage_IDENTIFIER_TYPE_strings);
-  (void) dummy;
-  int idx = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumName(
-      PlayerModerationMessage_IDENTIFIER_TYPE_entries,
-      PlayerModerationMessage_IDENTIFIER_TYPE_entries_by_number,
-      3, value);
-  return idx == -1 ? ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString() :
-                     PlayerModerationMessage_IDENTIFIER_TYPE_strings[idx].get();
-}
-bool PlayerModerationMessage_IDENTIFIER_TYPE_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, PlayerModerationMessage_IDENTIFIER_TYPE* value) {
-  int int_value;
-  bool success = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumValue(
-      PlayerModerationMessage_IDENTIFIER_TYPE_entries, 3, name, &int_value);
-  if (success) {
-    *value = static_cast<PlayerModerationMessage_IDENTIFIER_TYPE>(int_value);
-  }
-  return success;
-}
-#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-constexpr PlayerModerationMessage_IDENTIFIER_TYPE PlayerModerationMessage::IDENTIFIER_UNSPECIFIED;
-constexpr PlayerModerationMessage_IDENTIFIER_TYPE PlayerModerationMessage::UID;
-constexpr PlayerModerationMessage_IDENTIFIER_TYPE PlayerModerationMessage::IP;
-constexpr PlayerModerationMessage_IDENTIFIER_TYPE PlayerModerationMessage::IDENTIFIER_TYPE_MIN;
-constexpr PlayerModerationMessage_IDENTIFIER_TYPE PlayerModerationMessage::IDENTIFIER_TYPE_MAX;
-constexpr int PlayerModerationMessage::IDENTIFIER_TYPE_ARRAYSIZE;
-#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-bool ServerControlMessage_MESSAGE_TYPE_IsValid(int value) {
+bool request_t_IsValid(int value) {
   switch (value) {
     case 0:
     case 1:
@@ -267,103 +64,211 @@ bool ServerControlMessage_MESSAGE_TYPE_IsValid(int value) {
   }
 }
 
-static ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<std::string> ServerControlMessage_MESSAGE_TYPE_strings[5] = {};
+static ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<std::string> request_t_strings[5] = {};
 
-static const char ServerControlMessage_MESSAGE_TYPE_names[] =
-  "BAN"
-  "CHANGE_LEVEL"
-  "KICK"
-  "MESSAGE_UNSPECIFIED"
-  "RELOAD";
+static const char request_t_names[] =
+  "CONTROLLER_REQUEST_GAME_START"
+  "CONTROLLER_REQUEST_MODERATION"
+  "CONTROLLER_REQUEST_RELOAD"
+  "CONTROLLER_REQUEST_UNSPECIFIED"
+  "CONTROLLER_REQUSET_CHANGE_LEVEL";
 
-static const ::PROTOBUF_NAMESPACE_ID::internal::EnumEntry ServerControlMessage_MESSAGE_TYPE_entries[] = {
-  { {ServerControlMessage_MESSAGE_TYPE_names + 0, 3}, 4 },
-  { {ServerControlMessage_MESSAGE_TYPE_names + 3, 12}, 2 },
-  { {ServerControlMessage_MESSAGE_TYPE_names + 15, 4}, 3 },
-  { {ServerControlMessage_MESSAGE_TYPE_names + 19, 19}, 0 },
-  { {ServerControlMessage_MESSAGE_TYPE_names + 38, 6}, 1 },
+static const ::PROTOBUF_NAMESPACE_ID::internal::EnumEntry request_t_entries[] = {
+  { {request_t_names + 0, 29}, 1 },
+  { {request_t_names + 29, 29}, 2 },
+  { {request_t_names + 58, 25}, 3 },
+  { {request_t_names + 83, 30}, 0 },
+  { {request_t_names + 113, 31}, 4 },
 };
 
-static const int ServerControlMessage_MESSAGE_TYPE_entries_by_number[] = {
-  3, // 0 -> MESSAGE_UNSPECIFIED
-  4, // 1 -> RELOAD
-  1, // 2 -> CHANGE_LEVEL
-  2, // 3 -> KICK
-  0, // 4 -> BAN
+static const int request_t_entries_by_number[] = {
+  3, // 0 -> CONTROLLER_REQUEST_UNSPECIFIED
+  0, // 1 -> CONTROLLER_REQUEST_GAME_START
+  1, // 2 -> CONTROLLER_REQUEST_MODERATION
+  2, // 3 -> CONTROLLER_REQUEST_RELOAD
+  4, // 4 -> CONTROLLER_REQUSET_CHANGE_LEVEL
 };
 
-const std::string& ServerControlMessage_MESSAGE_TYPE_Name(
-    ServerControlMessage_MESSAGE_TYPE value) {
+const std::string& request_t_Name(
+    request_t value) {
   static const bool dummy =
       ::PROTOBUF_NAMESPACE_ID::internal::InitializeEnumStrings(
-          ServerControlMessage_MESSAGE_TYPE_entries,
-          ServerControlMessage_MESSAGE_TYPE_entries_by_number,
-          5, ServerControlMessage_MESSAGE_TYPE_strings);
+          request_t_entries,
+          request_t_entries_by_number,
+          5, request_t_strings);
   (void) dummy;
   int idx = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumName(
-      ServerControlMessage_MESSAGE_TYPE_entries,
-      ServerControlMessage_MESSAGE_TYPE_entries_by_number,
+      request_t_entries,
+      request_t_entries_by_number,
       5, value);
   return idx == -1 ? ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString() :
-                     ServerControlMessage_MESSAGE_TYPE_strings[idx].get();
+                     request_t_strings[idx].get();
 }
-bool ServerControlMessage_MESSAGE_TYPE_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, ServerControlMessage_MESSAGE_TYPE* value) {
+bool request_t_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, request_t* value) {
   int int_value;
   bool success = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumValue(
-      ServerControlMessage_MESSAGE_TYPE_entries, 5, name, &int_value);
+      request_t_entries, 5, name, &int_value);
   if (success) {
-    *value = static_cast<ServerControlMessage_MESSAGE_TYPE>(int_value);
+    *value = static_cast<request_t>(int_value);
   }
   return success;
 }
-#if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-constexpr ServerControlMessage_MESSAGE_TYPE ServerControlMessage::MESSAGE_UNSPECIFIED;
-constexpr ServerControlMessage_MESSAGE_TYPE ServerControlMessage::RELOAD;
-constexpr ServerControlMessage_MESSAGE_TYPE ServerControlMessage::CHANGE_LEVEL;
-constexpr ServerControlMessage_MESSAGE_TYPE ServerControlMessage::KICK;
-constexpr ServerControlMessage_MESSAGE_TYPE ServerControlMessage::BAN;
-constexpr ServerControlMessage_MESSAGE_TYPE ServerControlMessage::MESSAGE_TYPE_MIN;
-constexpr ServerControlMessage_MESSAGE_TYPE ServerControlMessage::MESSAGE_TYPE_MAX;
-constexpr int ServerControlMessage::MESSAGE_TYPE_ARRAYSIZE;
-#endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+bool sub_request_t_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+static ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<std::string> sub_request_t_strings[3] = {};
+
+static const char sub_request_t_names[] =
+  "CONTROLLER_MODERATION_REQUEST_BAN"
+  "CONTROLLER_MODERATION_REQUEST_KICK"
+  "CONTROLLER_SUB_REQUEST_UNSPECIFIED";
+
+static const ::PROTOBUF_NAMESPACE_ID::internal::EnumEntry sub_request_t_entries[] = {
+  { {sub_request_t_names + 0, 33}, 1 },
+  { {sub_request_t_names + 33, 34}, 2 },
+  { {sub_request_t_names + 67, 34}, 0 },
+};
+
+static const int sub_request_t_entries_by_number[] = {
+  2, // 0 -> CONTROLLER_SUB_REQUEST_UNSPECIFIED
+  0, // 1 -> CONTROLLER_MODERATION_REQUEST_BAN
+  1, // 2 -> CONTROLLER_MODERATION_REQUEST_KICK
+};
+
+const std::string& sub_request_t_Name(
+    sub_request_t value) {
+  static const bool dummy =
+      ::PROTOBUF_NAMESPACE_ID::internal::InitializeEnumStrings(
+          sub_request_t_entries,
+          sub_request_t_entries_by_number,
+          3, sub_request_t_strings);
+  (void) dummy;
+  int idx = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumName(
+      sub_request_t_entries,
+      sub_request_t_entries_by_number,
+      3, value);
+  return idx == -1 ? ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString() :
+                     sub_request_t_strings[idx].get();
+}
+bool sub_request_t_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, sub_request_t* value) {
+  int int_value;
+  bool success = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumValue(
+      sub_request_t_entries, 3, name, &int_value);
+  if (success) {
+    *value = static_cast<sub_request_t>(int_value);
+  }
+  return success;
+}
+bool response_t_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+static ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<std::string> response_t_strings[3] = {};
+
+static const char response_t_names[] =
+  "CONTROLLER_RESPONSE_FATAL_SCRIPT_ERROR"
+  "CONTROLLER_RESPONSE_HOST_STATE_CHANGE"
+  "CONTROLLER_RESPONSE_UNSPECIFIED";
+
+static const ::PROTOBUF_NAMESPACE_ID::internal::EnumEntry response_t_entries[] = {
+  { {response_t_names + 0, 38}, 2 },
+  { {response_t_names + 38, 37}, 1 },
+  { {response_t_names + 75, 31}, 0 },
+};
+
+static const int response_t_entries_by_number[] = {
+  2, // 0 -> CONTROLLER_RESPONSE_UNSPECIFIED
+  1, // 1 -> CONTROLLER_RESPONSE_HOST_STATE_CHANGE
+  0, // 2 -> CONTROLLER_RESPONSE_FATAL_SCRIPT_ERROR
+};
+
+const std::string& response_t_Name(
+    response_t value) {
+  static const bool dummy =
+      ::PROTOBUF_NAMESPACE_ID::internal::InitializeEnumStrings(
+          response_t_entries,
+          response_t_entries_by_number,
+          3, response_t_strings);
+  (void) dummy;
+  int idx = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumName(
+      response_t_entries,
+      response_t_entries_by_number,
+      3, value);
+  return idx == -1 ? ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString() :
+                     response_t_strings[idx].get();
+}
+bool response_t_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, response_t* value) {
+  int int_value;
+  bool success = ::PROTOBUF_NAMESPACE_ID::internal::LookUpEnumValue(
+      response_t_entries, 3, name, &int_value);
+  if (success) {
+    *value = static_cast<response_t>(int_value);
+  }
+  return success;
+}
 
 // ===================================================================
 
-class ServerUpdate::_Internal {
+class request::_Internal {
  public:
 };
 
-ServerUpdate::ServerUpdate(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+request::request(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:servercontroller.ServerUpdate)
+  // @@protoc_insertion_point(arena_constructor:servercontroller.request)
 }
-ServerUpdate::ServerUpdate(const ServerUpdate& from)
+request::request(const request& from)
   : ::PROTOBUF_NAMESPACE_ID::MessageLite() {
-  ServerUpdate* const _this = this; (void)_this;
+  request* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.type_){}
+      decltype(_impl_.args_){from._impl_.args_}
+    , decltype(_impl_.request_num_){}
+    , decltype(_impl_.request_type_){}
+    , decltype(_impl_.request_sub_type_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
-  _this->_impl_.type_ = from._impl_.type_;
-  // @@protoc_insertion_point(copy_constructor:servercontroller.ServerUpdate)
+  ::memcpy(&_impl_.request_num_, &from._impl_.request_num_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.request_sub_type_) -
+    reinterpret_cast<char*>(&_impl_.request_num_)) + sizeof(_impl_.request_sub_type_));
+  // @@protoc_insertion_point(copy_constructor:servercontroller.request)
 }
 
-inline void ServerUpdate::SharedCtor(
+inline void request::SharedCtor(
     ::_pb::Arena* arena, bool is_message_owned) {
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.type_){0}
+      decltype(_impl_.args_){arena}
+    , decltype(_impl_.request_num_){0u}
+    , decltype(_impl_.request_type_){0}
+    , decltype(_impl_.request_sub_type_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
 
-ServerUpdate::~ServerUpdate() {
-  // @@protoc_insertion_point(destructor:servercontroller.ServerUpdate)
+request::~request() {
+  // @@protoc_insertion_point(destructor:servercontroller.request)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<std::string>()) {
   (void)arena;
     return;
@@ -371,245 +276,72 @@ ServerUpdate::~ServerUpdate() {
   SharedDtor();
 }
 
-inline void ServerUpdate::SharedDtor() {
+inline void request::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.args_.~RepeatedPtrField();
 }
 
-void ServerUpdate::SetCachedSize(int size) const {
+void request::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
 
-void ServerUpdate::Clear() {
-// @@protoc_insertion_point(message_clear_start:servercontroller.ServerUpdate)
+void request::Clear() {
+// @@protoc_insertion_point(message_clear_start:servercontroller.request)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.type_ = 0;
+  _impl_.args_.Clear();
+  ::memset(&_impl_.request_num_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&_impl_.request_sub_type_) -
+      reinterpret_cast<char*>(&_impl_.request_num_)) + sizeof(_impl_.request_sub_type_));
   _internal_metadata_.Clear<std::string>();
 }
 
-const char* ServerUpdate::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+const char* request::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   while (!ctx->Done(&ptr)) {
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // .servercontroller.ServerUpdate.MESSAGE_TYPE type = 1;
+      // uint32 request_num = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
-          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          _impl_.request_num_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
-          _internal_set_type(static_cast<::servercontroller::ServerUpdate_MESSAGE_TYPE>(val));
         } else
           goto handle_unusual;
         continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<std::string>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
-  return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
-}
-
-uint8_t* ServerUpdate::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:servercontroller.ServerUpdate)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // .servercontroller.ServerUpdate.MESSAGE_TYPE type = 1;
-  if (this->_internal_type() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteEnumToArray(
-      1, this->_internal_type(), target);
-  }
-
-  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = stream->WriteRaw(_internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString).data(),
-        static_cast<int>(_internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString).size()), target);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:servercontroller.ServerUpdate)
-  return target;
-}
-
-size_t ServerUpdate::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:servercontroller.ServerUpdate)
-  size_t total_size = 0;
-
-  uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  // .servercontroller.ServerUpdate.MESSAGE_TYPE type = 1;
-  if (this->_internal_type() != 0) {
-    total_size += 1 +
-      ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
-  }
-
-  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    total_size += _internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString).size();
-  }
-  int cached_size = ::_pbi::ToCachedSize(total_size);
-  SetCachedSize(cached_size);
-  return total_size;
-}
-
-void ServerUpdate::CheckTypeAndMergeFrom(
-    const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) {
-  MergeFrom(*::_pbi::DownCast<const ServerUpdate*>(
-      &from));
-}
-
-void ServerUpdate::MergeFrom(const ServerUpdate& from) {
-  ServerUpdate* const _this = this;
-  // @@protoc_insertion_point(class_specific_merge_from_start:servercontroller.ServerUpdate)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  if (from._internal_type() != 0) {
-    _this->_internal_set_type(from._internal_type());
-  }
-  _this->_internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
-}
-
-void ServerUpdate::CopyFrom(const ServerUpdate& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:servercontroller.ServerUpdate)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool ServerUpdate::IsInitialized() const {
-  return true;
-}
-
-void ServerUpdate::InternalSwap(ServerUpdate* other) {
-  using std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_.type_, other->_impl_.type_);
-}
-
-std::string ServerUpdate::GetTypeName() const {
-  return "servercontroller.ServerUpdate";
-}
-
-
-// ===================================================================
-
-class PlayerModerationMessage::_Internal {
- public:
-};
-
-PlayerModerationMessage::PlayerModerationMessage(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:servercontroller.PlayerModerationMessage)
-}
-PlayerModerationMessage::PlayerModerationMessage(const PlayerModerationMessage& from)
-  : ::PROTOBUF_NAMESPACE_ID::MessageLite() {
-  PlayerModerationMessage* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.identifier_){}
-    , decltype(_impl_.identifier_type_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
-
-  _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
-  _impl_.identifier_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.identifier_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_identifier().empty()) {
-    _this->_impl_.identifier_.Set(from._internal_identifier(), 
-      _this->GetArenaForAllocation());
-  }
-  _this->_impl_.identifier_type_ = from._impl_.identifier_type_;
-  // @@protoc_insertion_point(copy_constructor:servercontroller.PlayerModerationMessage)
-}
-
-inline void PlayerModerationMessage::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.identifier_){}
-    , decltype(_impl_.identifier_type_){0}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.identifier_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.identifier_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-}
-
-PlayerModerationMessage::~PlayerModerationMessage() {
-  // @@protoc_insertion_point(destructor:servercontroller.PlayerModerationMessage)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<std::string>()) {
-  (void)arena;
-    return;
-  }
-  SharedDtor();
-}
-
-inline void PlayerModerationMessage::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.identifier_.Destroy();
-}
-
-void PlayerModerationMessage::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void PlayerModerationMessage::Clear() {
-// @@protoc_insertion_point(message_clear_start:servercontroller.PlayerModerationMessage)
-  uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  _impl_.identifier_.ClearToEmpty();
-  _impl_.identifier_type_ = 0;
-  _internal_metadata_.Clear<std::string>();
-}
-
-const char* PlayerModerationMessage::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // .servercontroller.PlayerModerationMessage.IDENTIFIER_TYPE identifier_type = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
-          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-          _internal_set_identifier_type(static_cast<::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE>(val));
-        } else
-          goto handle_unusual;
-        continue;
-      // string identifier = 2;
+      // .servercontroller.request_t request_type = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_identifier();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, nullptr));
+          _internal_set_request_type(static_cast<::servercontroller::request_t>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // .servercontroller.sub_request_t request_sub_type = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_request_sub_type(static_cast<::servercontroller::sub_request_t>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated string args = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            auto str = _internal_add_args();
+            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+            CHK_(ptr);
+            CHK_(::_pbi::VerifyUTF8(str, nullptr));
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
         } else
           goto handle_unusual;
         continue;
@@ -636,56 +368,81 @@ failure:
 #undef CHK_
 }
 
-uint8_t* PlayerModerationMessage::_InternalSerialize(
+uint8_t* request::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:servercontroller.PlayerModerationMessage)
+  // @@protoc_insertion_point(serialize_to_array_start:servercontroller.request)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .servercontroller.PlayerModerationMessage.IDENTIFIER_TYPE identifier_type = 1;
-  if (this->_internal_identifier_type() != 0) {
+  // uint32 request_num = 1;
+  if (this->_internal_request_num() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteEnumToArray(
-      1, this->_internal_identifier_type(), target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(1, this->_internal_request_num(), target);
   }
 
-  // string identifier = 2;
-  if (!this->_internal_identifier().empty()) {
+  // .servercontroller.request_t request_type = 2;
+  if (this->_internal_request_type() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      2, this->_internal_request_type(), target);
+  }
+
+  // .servercontroller.sub_request_t request_sub_type = 3;
+  if (this->_internal_request_sub_type() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      3, this->_internal_request_sub_type(), target);
+  }
+
+  // repeated string args = 4;
+  for (int i = 0, n = this->_internal_args_size(); i < n; i++) {
+    const auto& s = this->_internal_args(i);
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_identifier().data(), static_cast<int>(this->_internal_identifier().length()),
+      s.data(), static_cast<int>(s.length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "servercontroller.PlayerModerationMessage.identifier");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_identifier(), target);
+      "servercontroller.request.args");
+    target = stream->WriteString(4, s, target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = stream->WriteRaw(_internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString).data(),
         static_cast<int>(_internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString).size()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:servercontroller.PlayerModerationMessage)
+  // @@protoc_insertion_point(serialize_to_array_end:servercontroller.request)
   return target;
 }
 
-size_t PlayerModerationMessage::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:servercontroller.PlayerModerationMessage)
+size_t request::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:servercontroller.request)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // string identifier = 2;
-  if (!this->_internal_identifier().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_identifier());
+  // repeated string args = 4;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.args_.size());
+  for (int i = 0, n = _impl_.args_.size(); i < n; i++) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+      _impl_.args_.Get(i));
   }
 
-  // .servercontroller.PlayerModerationMessage.IDENTIFIER_TYPE identifier_type = 1;
-  if (this->_internal_identifier_type() != 0) {
+  // uint32 request_num = 1;
+  if (this->_internal_request_num() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_request_num());
+  }
+
+  // .servercontroller.request_t request_type = 2;
+  if (this->_internal_request_type() != 0) {
     total_size += 1 +
-      ::_pbi::WireFormatLite::EnumSize(this->_internal_identifier_type());
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_request_type());
+  }
+
+  // .servercontroller.sub_request_t request_sub_type = 3;
+  if (this->_internal_request_sub_type() != 0) {
+    total_size += 1 +
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_request_sub_type());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -696,92 +453,102 @@ size_t PlayerModerationMessage::ByteSizeLong() const {
   return total_size;
 }
 
-void PlayerModerationMessage::CheckTypeAndMergeFrom(
+void request::CheckTypeAndMergeFrom(
     const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) {
-  MergeFrom(*::_pbi::DownCast<const PlayerModerationMessage*>(
+  MergeFrom(*::_pbi::DownCast<const request*>(
       &from));
 }
 
-void PlayerModerationMessage::MergeFrom(const PlayerModerationMessage& from) {
-  PlayerModerationMessage* const _this = this;
-  // @@protoc_insertion_point(class_specific_merge_from_start:servercontroller.PlayerModerationMessage)
+void request::MergeFrom(const request& from) {
+  request* const _this = this;
+  // @@protoc_insertion_point(class_specific_merge_from_start:servercontroller.request)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (!from._internal_identifier().empty()) {
-    _this->_internal_set_identifier(from._internal_identifier());
+  _this->_impl_.args_.MergeFrom(from._impl_.args_);
+  if (from._internal_request_num() != 0) {
+    _this->_internal_set_request_num(from._internal_request_num());
   }
-  if (from._internal_identifier_type() != 0) {
-    _this->_internal_set_identifier_type(from._internal_identifier_type());
+  if (from._internal_request_type() != 0) {
+    _this->_internal_set_request_type(from._internal_request_type());
+  }
+  if (from._internal_request_sub_type() != 0) {
+    _this->_internal_set_request_sub_type(from._internal_request_sub_type());
   }
   _this->_internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
-void PlayerModerationMessage::CopyFrom(const PlayerModerationMessage& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:servercontroller.PlayerModerationMessage)
+void request::CopyFrom(const request& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:servercontroller.request)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool PlayerModerationMessage::IsInitialized() const {
+bool request::IsInitialized() const {
   return true;
 }
 
-void PlayerModerationMessage::InternalSwap(PlayerModerationMessage* other) {
+void request::InternalSwap(request* other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.identifier_, lhs_arena,
-      &other->_impl_.identifier_, rhs_arena
-  );
-  swap(_impl_.identifier_type_, other->_impl_.identifier_type_);
+  _impl_.args_.InternalSwap(&other->_impl_.args_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(request, _impl_.request_sub_type_)
+      + sizeof(request::_impl_.request_sub_type_)
+      - PROTOBUF_FIELD_OFFSET(request, _impl_.request_num_)>(
+          reinterpret_cast<char*>(&_impl_.request_num_),
+          reinterpret_cast<char*>(&other->_impl_.request_num_));
 }
 
-std::string PlayerModerationMessage::GetTypeName() const {
-  return "servercontroller.PlayerModerationMessage";
+std::string request::GetTypeName() const {
+  return "servercontroller.request";
 }
 
 
 // ===================================================================
 
-class ServerControlMessage::_Internal {
+class response::_Internal {
  public:
 };
 
-ServerControlMessage::ServerControlMessage(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+response::response(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::MessageLite(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:servercontroller.ServerControlMessage)
+  // @@protoc_insertion_point(arena_constructor:servercontroller.response)
 }
-ServerControlMessage::ServerControlMessage(const ServerControlMessage& from)
+response::response(const response& from)
   : ::PROTOBUF_NAMESPACE_ID::MessageLite() {
-  ServerControlMessage* const _this = this; (void)_this;
+  response* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.type_){}
+      decltype(_impl_.is_unsolicited_response_){}
+    , decltype(_impl_.response_num_){}
+    , decltype(_impl_.response_type_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
-  _this->_impl_.type_ = from._impl_.type_;
-  // @@protoc_insertion_point(copy_constructor:servercontroller.ServerControlMessage)
+  ::memcpy(&_impl_.is_unsolicited_response_, &from._impl_.is_unsolicited_response_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.response_type_) -
+    reinterpret_cast<char*>(&_impl_.is_unsolicited_response_)) + sizeof(_impl_.response_type_));
+  // @@protoc_insertion_point(copy_constructor:servercontroller.response)
 }
 
-inline void ServerControlMessage::SharedCtor(
+inline void response::SharedCtor(
     ::_pb::Arena* arena, bool is_message_owned) {
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.type_){0}
+      decltype(_impl_.is_unsolicited_response_){false}
+    , decltype(_impl_.response_num_){0u}
+    , decltype(_impl_.response_type_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
 
-ServerControlMessage::~ServerControlMessage() {
-  // @@protoc_insertion_point(destructor:servercontroller.ServerControlMessage)
+response::~response() {
+  // @@protoc_insertion_point(destructor:servercontroller.response)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<std::string>()) {
   (void)arena;
     return;
@@ -789,36 +556,54 @@ ServerControlMessage::~ServerControlMessage() {
   SharedDtor();
 }
 
-inline void ServerControlMessage::SharedDtor() {
+inline void response::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
 }
 
-void ServerControlMessage::SetCachedSize(int size) const {
+void response::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
 
-void ServerControlMessage::Clear() {
-// @@protoc_insertion_point(message_clear_start:servercontroller.ServerControlMessage)
+void response::Clear() {
+// @@protoc_insertion_point(message_clear_start:servercontroller.response)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.type_ = 0;
+  ::memset(&_impl_.is_unsolicited_response_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&_impl_.response_type_) -
+      reinterpret_cast<char*>(&_impl_.is_unsolicited_response_)) + sizeof(_impl_.response_type_));
   _internal_metadata_.Clear<std::string>();
 }
 
-const char* ServerControlMessage::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+const char* response::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   while (!ctx->Done(&ptr)) {
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // .servercontroller.ServerControlMessage.MESSAGE_TYPE type = 1;
+      // bool is_unsolicited_response = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _impl_.is_unsolicited_response_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint32 response_num = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _impl_.response_num_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // .servercontroller.response_t response_type = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          _internal_set_type(static_cast<::servercontroller::ServerControlMessage_MESSAGE_TYPE>(val));
+          _internal_set_response_type(static_cast<::servercontroller::response_t>(val));
         } else
           goto handle_unusual;
         continue;
@@ -845,39 +630,61 @@ failure:
 #undef CHK_
 }
 
-uint8_t* ServerControlMessage::_InternalSerialize(
+uint8_t* response::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:servercontroller.ServerControlMessage)
+  // @@protoc_insertion_point(serialize_to_array_start:servercontroller.response)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .servercontroller.ServerControlMessage.MESSAGE_TYPE type = 1;
-  if (this->_internal_type() != 0) {
+  // bool is_unsolicited_response = 1;
+  if (this->_internal_is_unsolicited_response() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteBoolToArray(1, this->_internal_is_unsolicited_response(), target);
+  }
+
+  // uint32 response_num = 2;
+  if (this->_internal_response_num() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(2, this->_internal_response_num(), target);
+  }
+
+  // .servercontroller.response_t response_type = 3;
+  if (this->_internal_response_type() != 0) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
-      1, this->_internal_type(), target);
+      3, this->_internal_response_type(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = stream->WriteRaw(_internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString).data(),
         static_cast<int>(_internal_metadata_.unknown_fields<std::string>(::PROTOBUF_NAMESPACE_ID::internal::GetEmptyString).size()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:servercontroller.ServerControlMessage)
+  // @@protoc_insertion_point(serialize_to_array_end:servercontroller.response)
   return target;
 }
 
-size_t ServerControlMessage::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:servercontroller.ServerControlMessage)
+size_t response::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:servercontroller.response)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // .servercontroller.ServerControlMessage.MESSAGE_TYPE type = 1;
-  if (this->_internal_type() != 0) {
+  // bool is_unsolicited_response = 1;
+  if (this->_internal_is_unsolicited_response() != 0) {
+    total_size += 1 + 1;
+  }
+
+  // uint32 response_num = 2;
+  if (this->_internal_response_num() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_response_num());
+  }
+
+  // .servercontroller.response_t response_type = 3;
+  if (this->_internal_response_type() != 0) {
     total_size += 1 +
-      ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_response_type());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -888,61 +695,68 @@ size_t ServerControlMessage::ByteSizeLong() const {
   return total_size;
 }
 
-void ServerControlMessage::CheckTypeAndMergeFrom(
+void response::CheckTypeAndMergeFrom(
     const ::PROTOBUF_NAMESPACE_ID::MessageLite& from) {
-  MergeFrom(*::_pbi::DownCast<const ServerControlMessage*>(
+  MergeFrom(*::_pbi::DownCast<const response*>(
       &from));
 }
 
-void ServerControlMessage::MergeFrom(const ServerControlMessage& from) {
-  ServerControlMessage* const _this = this;
-  // @@protoc_insertion_point(class_specific_merge_from_start:servercontroller.ServerControlMessage)
+void response::MergeFrom(const response& from) {
+  response* const _this = this;
+  // @@protoc_insertion_point(class_specific_merge_from_start:servercontroller.response)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_type() != 0) {
-    _this->_internal_set_type(from._internal_type());
+  if (from._internal_is_unsolicited_response() != 0) {
+    _this->_internal_set_is_unsolicited_response(from._internal_is_unsolicited_response());
+  }
+  if (from._internal_response_num() != 0) {
+    _this->_internal_set_response_num(from._internal_response_num());
+  }
+  if (from._internal_response_type() != 0) {
+    _this->_internal_set_response_type(from._internal_response_type());
   }
   _this->_internal_metadata_.MergeFrom<std::string>(from._internal_metadata_);
 }
 
-void ServerControlMessage::CopyFrom(const ServerControlMessage& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:servercontroller.ServerControlMessage)
+void response::CopyFrom(const response& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:servercontroller.response)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool ServerControlMessage::IsInitialized() const {
+bool response::IsInitialized() const {
   return true;
 }
 
-void ServerControlMessage::InternalSwap(ServerControlMessage* other) {
+void response::InternalSwap(response* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_.type_, other->_impl_.type_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(response, _impl_.response_type_)
+      + sizeof(response::_impl_.response_type_)
+      - PROTOBUF_FIELD_OFFSET(response, _impl_.is_unsolicited_response_)>(
+          reinterpret_cast<char*>(&_impl_.is_unsolicited_response_),
+          reinterpret_cast<char*>(&other->_impl_.is_unsolicited_response_));
 }
 
-std::string ServerControlMessage::GetTypeName() const {
-  return "servercontroller.ServerControlMessage";
+std::string response::GetTypeName() const {
+  return "servercontroller.response";
 }
 
 
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace servercontroller
 PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::servercontroller::ServerUpdate*
-Arena::CreateMaybeMessage< ::servercontroller::ServerUpdate >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::servercontroller::ServerUpdate >(arena);
+template<> PROTOBUF_NOINLINE ::servercontroller::request*
+Arena::CreateMaybeMessage< ::servercontroller::request >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::servercontroller::request >(arena);
 }
-template<> PROTOBUF_NOINLINE ::servercontroller::PlayerModerationMessage*
-Arena::CreateMaybeMessage< ::servercontroller::PlayerModerationMessage >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::servercontroller::PlayerModerationMessage >(arena);
-}
-template<> PROTOBUF_NOINLINE ::servercontroller::ServerControlMessage*
-Arena::CreateMaybeMessage< ::servercontroller::ServerControlMessage >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::servercontroller::ServerControlMessage >(arena);
+template<> PROTOBUF_NOINLINE ::servercontroller::response*
+Arena::CreateMaybeMessage< ::servercontroller::response >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::servercontroller::response >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

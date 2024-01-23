@@ -43,134 +43,107 @@ struct TableStruct_servercontroller_2eproto {
   static const uint32_t offsets[];
 };
 namespace servercontroller {
-class PlayerModerationMessage;
-struct PlayerModerationMessageDefaultTypeInternal;
-extern PlayerModerationMessageDefaultTypeInternal _PlayerModerationMessage_default_instance_;
-class ServerControlMessage;
-struct ServerControlMessageDefaultTypeInternal;
-extern ServerControlMessageDefaultTypeInternal _ServerControlMessage_default_instance_;
-class ServerUpdate;
-struct ServerUpdateDefaultTypeInternal;
-extern ServerUpdateDefaultTypeInternal _ServerUpdate_default_instance_;
+class request;
+struct requestDefaultTypeInternal;
+extern requestDefaultTypeInternal _request_default_instance_;
+class response;
+struct responseDefaultTypeInternal;
+extern responseDefaultTypeInternal _response_default_instance_;
 }  // namespace servercontroller
 PROTOBUF_NAMESPACE_OPEN
-template<> ::servercontroller::PlayerModerationMessage* Arena::CreateMaybeMessage<::servercontroller::PlayerModerationMessage>(Arena*);
-template<> ::servercontroller::ServerControlMessage* Arena::CreateMaybeMessage<::servercontroller::ServerControlMessage>(Arena*);
-template<> ::servercontroller::ServerUpdate* Arena::CreateMaybeMessage<::servercontroller::ServerUpdate>(Arena*);
+template<> ::servercontroller::request* Arena::CreateMaybeMessage<::servercontroller::request>(Arena*);
+template<> ::servercontroller::response* Arena::CreateMaybeMessage<::servercontroller::response>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace servercontroller {
 
-enum ServerUpdate_MESSAGE_TYPE : int {
-  ServerUpdate_MESSAGE_TYPE_MESSAGE_UNSPECIFIED = 0,
-  ServerUpdate_MESSAGE_TYPE_HOST_STATE_CHANGE = 1,
-  ServerUpdate_MESSAGE_TYPE_FATAL_SCRIPT_ERROR = 2,
-  ServerUpdate_MESSAGE_TYPE_ServerUpdate_MESSAGE_TYPE_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
-  ServerUpdate_MESSAGE_TYPE_ServerUpdate_MESSAGE_TYPE_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+enum request_t : int {
+  CONTROLLER_REQUEST_UNSPECIFIED = 0,
+  CONTROLLER_REQUEST_GAME_START = 1,
+  CONTROLLER_REQUEST_MODERATION = 2,
+  CONTROLLER_REQUEST_RELOAD = 3,
+  CONTROLLER_REQUSET_CHANGE_LEVEL = 4,
+  request_t_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  request_t_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool ServerUpdate_MESSAGE_TYPE_IsValid(int value);
-constexpr ServerUpdate_MESSAGE_TYPE ServerUpdate_MESSAGE_TYPE_MESSAGE_TYPE_MIN = ServerUpdate_MESSAGE_TYPE_MESSAGE_UNSPECIFIED;
-constexpr ServerUpdate_MESSAGE_TYPE ServerUpdate_MESSAGE_TYPE_MESSAGE_TYPE_MAX = ServerUpdate_MESSAGE_TYPE_FATAL_SCRIPT_ERROR;
-constexpr int ServerUpdate_MESSAGE_TYPE_MESSAGE_TYPE_ARRAYSIZE = ServerUpdate_MESSAGE_TYPE_MESSAGE_TYPE_MAX + 1;
+bool request_t_IsValid(int value);
+constexpr request_t request_t_MIN = CONTROLLER_REQUEST_UNSPECIFIED;
+constexpr request_t request_t_MAX = CONTROLLER_REQUSET_CHANGE_LEVEL;
+constexpr int request_t_ARRAYSIZE = request_t_MAX + 1;
 
-const std::string& ServerUpdate_MESSAGE_TYPE_Name(ServerUpdate_MESSAGE_TYPE value);
+const std::string& request_t_Name(request_t value);
 template<typename T>
-inline const std::string& ServerUpdate_MESSAGE_TYPE_Name(T enum_t_value) {
-  static_assert(::std::is_same<T, ServerUpdate_MESSAGE_TYPE>::value ||
+inline const std::string& request_t_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, request_t>::value ||
     ::std::is_integral<T>::value,
-    "Incorrect type passed to function ServerUpdate_MESSAGE_TYPE_Name.");
-  return ServerUpdate_MESSAGE_TYPE_Name(static_cast<ServerUpdate_MESSAGE_TYPE>(enum_t_value));
+    "Incorrect type passed to function request_t_Name.");
+  return request_t_Name(static_cast<request_t>(enum_t_value));
 }
-bool ServerUpdate_MESSAGE_TYPE_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, ServerUpdate_MESSAGE_TYPE* value);
-enum PlayerModerationMessage_ACTION_TYPE : int {
-  PlayerModerationMessage_ACTION_TYPE_ACTION_UNSPECIFIED = 0,
-  PlayerModerationMessage_ACTION_TYPE_KICK = 1,
-  PlayerModerationMessage_ACTION_TYPE_BAN = 2,
-  PlayerModerationMessage_ACTION_TYPE_UNBAN = 3,
-  PlayerModerationMessage_ACTION_TYPE_PlayerModerationMessage_ACTION_TYPE_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
-  PlayerModerationMessage_ACTION_TYPE_PlayerModerationMessage_ACTION_TYPE_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+bool request_t_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, request_t* value);
+enum sub_request_t : int {
+  CONTROLLER_SUB_REQUEST_UNSPECIFIED = 0,
+  CONTROLLER_MODERATION_REQUEST_BAN = 1,
+  CONTROLLER_MODERATION_REQUEST_KICK = 2,
+  sub_request_t_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  sub_request_t_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool PlayerModerationMessage_ACTION_TYPE_IsValid(int value);
-constexpr PlayerModerationMessage_ACTION_TYPE PlayerModerationMessage_ACTION_TYPE_ACTION_TYPE_MIN = PlayerModerationMessage_ACTION_TYPE_ACTION_UNSPECIFIED;
-constexpr PlayerModerationMessage_ACTION_TYPE PlayerModerationMessage_ACTION_TYPE_ACTION_TYPE_MAX = PlayerModerationMessage_ACTION_TYPE_UNBAN;
-constexpr int PlayerModerationMessage_ACTION_TYPE_ACTION_TYPE_ARRAYSIZE = PlayerModerationMessage_ACTION_TYPE_ACTION_TYPE_MAX + 1;
+bool sub_request_t_IsValid(int value);
+constexpr sub_request_t sub_request_t_MIN = CONTROLLER_SUB_REQUEST_UNSPECIFIED;
+constexpr sub_request_t sub_request_t_MAX = CONTROLLER_MODERATION_REQUEST_KICK;
+constexpr int sub_request_t_ARRAYSIZE = sub_request_t_MAX + 1;
 
-const std::string& PlayerModerationMessage_ACTION_TYPE_Name(PlayerModerationMessage_ACTION_TYPE value);
+const std::string& sub_request_t_Name(sub_request_t value);
 template<typename T>
-inline const std::string& PlayerModerationMessage_ACTION_TYPE_Name(T enum_t_value) {
-  static_assert(::std::is_same<T, PlayerModerationMessage_ACTION_TYPE>::value ||
+inline const std::string& sub_request_t_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, sub_request_t>::value ||
     ::std::is_integral<T>::value,
-    "Incorrect type passed to function PlayerModerationMessage_ACTION_TYPE_Name.");
-  return PlayerModerationMessage_ACTION_TYPE_Name(static_cast<PlayerModerationMessage_ACTION_TYPE>(enum_t_value));
+    "Incorrect type passed to function sub_request_t_Name.");
+  return sub_request_t_Name(static_cast<sub_request_t>(enum_t_value));
 }
-bool PlayerModerationMessage_ACTION_TYPE_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, PlayerModerationMessage_ACTION_TYPE* value);
-enum PlayerModerationMessage_IDENTIFIER_TYPE : int {
-  PlayerModerationMessage_IDENTIFIER_TYPE_IDENTIFIER_UNSPECIFIED = 0,
-  PlayerModerationMessage_IDENTIFIER_TYPE_UID = 1,
-  PlayerModerationMessage_IDENTIFIER_TYPE_IP = 2,
-  PlayerModerationMessage_IDENTIFIER_TYPE_PlayerModerationMessage_IDENTIFIER_TYPE_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
-  PlayerModerationMessage_IDENTIFIER_TYPE_PlayerModerationMessage_IDENTIFIER_TYPE_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+bool sub_request_t_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, sub_request_t* value);
+enum response_t : int {
+  CONTROLLER_RESPONSE_UNSPECIFIED = 0,
+  CONTROLLER_RESPONSE_HOST_STATE_CHANGE = 1,
+  CONTROLLER_RESPONSE_FATAL_SCRIPT_ERROR = 2,
+  response_t_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  response_t_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool PlayerModerationMessage_IDENTIFIER_TYPE_IsValid(int value);
-constexpr PlayerModerationMessage_IDENTIFIER_TYPE PlayerModerationMessage_IDENTIFIER_TYPE_IDENTIFIER_TYPE_MIN = PlayerModerationMessage_IDENTIFIER_TYPE_IDENTIFIER_UNSPECIFIED;
-constexpr PlayerModerationMessage_IDENTIFIER_TYPE PlayerModerationMessage_IDENTIFIER_TYPE_IDENTIFIER_TYPE_MAX = PlayerModerationMessage_IDENTIFIER_TYPE_IP;
-constexpr int PlayerModerationMessage_IDENTIFIER_TYPE_IDENTIFIER_TYPE_ARRAYSIZE = PlayerModerationMessage_IDENTIFIER_TYPE_IDENTIFIER_TYPE_MAX + 1;
+bool response_t_IsValid(int value);
+constexpr response_t response_t_MIN = CONTROLLER_RESPONSE_UNSPECIFIED;
+constexpr response_t response_t_MAX = CONTROLLER_RESPONSE_FATAL_SCRIPT_ERROR;
+constexpr int response_t_ARRAYSIZE = response_t_MAX + 1;
 
-const std::string& PlayerModerationMessage_IDENTIFIER_TYPE_Name(PlayerModerationMessage_IDENTIFIER_TYPE value);
+const std::string& response_t_Name(response_t value);
 template<typename T>
-inline const std::string& PlayerModerationMessage_IDENTIFIER_TYPE_Name(T enum_t_value) {
-  static_assert(::std::is_same<T, PlayerModerationMessage_IDENTIFIER_TYPE>::value ||
+inline const std::string& response_t_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, response_t>::value ||
     ::std::is_integral<T>::value,
-    "Incorrect type passed to function PlayerModerationMessage_IDENTIFIER_TYPE_Name.");
-  return PlayerModerationMessage_IDENTIFIER_TYPE_Name(static_cast<PlayerModerationMessage_IDENTIFIER_TYPE>(enum_t_value));
+    "Incorrect type passed to function response_t_Name.");
+  return response_t_Name(static_cast<response_t>(enum_t_value));
 }
-bool PlayerModerationMessage_IDENTIFIER_TYPE_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, PlayerModerationMessage_IDENTIFIER_TYPE* value);
-enum ServerControlMessage_MESSAGE_TYPE : int {
-  ServerControlMessage_MESSAGE_TYPE_MESSAGE_UNSPECIFIED = 0,
-  ServerControlMessage_MESSAGE_TYPE_RELOAD = 1,
-  ServerControlMessage_MESSAGE_TYPE_CHANGE_LEVEL = 2,
-  ServerControlMessage_MESSAGE_TYPE_KICK = 3,
-  ServerControlMessage_MESSAGE_TYPE_BAN = 4,
-  ServerControlMessage_MESSAGE_TYPE_ServerControlMessage_MESSAGE_TYPE_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
-  ServerControlMessage_MESSAGE_TYPE_ServerControlMessage_MESSAGE_TYPE_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
-};
-bool ServerControlMessage_MESSAGE_TYPE_IsValid(int value);
-constexpr ServerControlMessage_MESSAGE_TYPE ServerControlMessage_MESSAGE_TYPE_MESSAGE_TYPE_MIN = ServerControlMessage_MESSAGE_TYPE_MESSAGE_UNSPECIFIED;
-constexpr ServerControlMessage_MESSAGE_TYPE ServerControlMessage_MESSAGE_TYPE_MESSAGE_TYPE_MAX = ServerControlMessage_MESSAGE_TYPE_BAN;
-constexpr int ServerControlMessage_MESSAGE_TYPE_MESSAGE_TYPE_ARRAYSIZE = ServerControlMessage_MESSAGE_TYPE_MESSAGE_TYPE_MAX + 1;
-
-const std::string& ServerControlMessage_MESSAGE_TYPE_Name(ServerControlMessage_MESSAGE_TYPE value);
-template<typename T>
-inline const std::string& ServerControlMessage_MESSAGE_TYPE_Name(T enum_t_value) {
-  static_assert(::std::is_same<T, ServerControlMessage_MESSAGE_TYPE>::value ||
-    ::std::is_integral<T>::value,
-    "Incorrect type passed to function ServerControlMessage_MESSAGE_TYPE_Name.");
-  return ServerControlMessage_MESSAGE_TYPE_Name(static_cast<ServerControlMessage_MESSAGE_TYPE>(enum_t_value));
-}
-bool ServerControlMessage_MESSAGE_TYPE_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, ServerControlMessage_MESSAGE_TYPE* value);
+bool response_t_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, response_t* value);
 // ===================================================================
 
-class ServerUpdate final :
-    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:servercontroller.ServerUpdate) */ {
+class request final :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:servercontroller.request) */ {
  public:
-  inline ServerUpdate() : ServerUpdate(nullptr) {}
-  ~ServerUpdate() override;
-  explicit PROTOBUF_CONSTEXPR ServerUpdate(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline request() : request(nullptr) {}
+  ~request() override;
+  explicit PROTOBUF_CONSTEXPR request(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  ServerUpdate(const ServerUpdate& from);
-  ServerUpdate(ServerUpdate&& from) noexcept
-    : ServerUpdate() {
+  request(const request& from);
+  request(request&& from) noexcept
+    : request() {
     *this = ::std::move(from);
   }
 
-  inline ServerUpdate& operator=(const ServerUpdate& from) {
+  inline request& operator=(const request& from) {
     CopyFrom(from);
     return *this;
   }
-  inline ServerUpdate& operator=(ServerUpdate&& from) noexcept {
+  inline request& operator=(request&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -184,20 +157,20 @@ class ServerUpdate final :
     return *this;
   }
 
-  static const ServerUpdate& default_instance() {
+  static const request& default_instance() {
     return *internal_default_instance();
   }
-  static inline const ServerUpdate* internal_default_instance() {
-    return reinterpret_cast<const ServerUpdate*>(
-               &_ServerUpdate_default_instance_);
+  static inline const request* internal_default_instance() {
+    return reinterpret_cast<const request*>(
+               &_request_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     0;
 
-  friend void swap(ServerUpdate& a, ServerUpdate& b) {
+  friend void swap(request& a, request& b) {
     a.Swap(&b);
   }
-  inline void Swap(ServerUpdate* other) {
+  inline void Swap(request* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -210,7 +183,7 @@ class ServerUpdate final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(ServerUpdate* other) {
+  void UnsafeArenaSwap(request* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -218,12 +191,12 @@ class ServerUpdate final :
 
   // implements Message ----------------------------------------------
 
-  ServerUpdate* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<ServerUpdate>(arena);
+  request* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<request>(arena);
   }
   void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)  final;
-  void CopyFrom(const ServerUpdate& from);
-  void MergeFrom(const ServerUpdate& from);
+  void CopyFrom(const request& from);
+  void MergeFrom(const request& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -237,15 +210,15 @@ class ServerUpdate final :
   void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(ServerUpdate* other);
+  void InternalSwap(request* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "servercontroller.ServerUpdate";
+    return "servercontroller.request";
   }
   protected:
-  explicit ServerUpdate(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+  explicit request(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
   public:
 
@@ -253,49 +226,66 @@ class ServerUpdate final :
 
   // nested types ----------------------------------------------------
 
-  typedef ServerUpdate_MESSAGE_TYPE MESSAGE_TYPE;
-  static constexpr MESSAGE_TYPE MESSAGE_UNSPECIFIED =
-    ServerUpdate_MESSAGE_TYPE_MESSAGE_UNSPECIFIED;
-  static constexpr MESSAGE_TYPE HOST_STATE_CHANGE =
-    ServerUpdate_MESSAGE_TYPE_HOST_STATE_CHANGE;
-  static constexpr MESSAGE_TYPE FATAL_SCRIPT_ERROR =
-    ServerUpdate_MESSAGE_TYPE_FATAL_SCRIPT_ERROR;
-  static inline bool MESSAGE_TYPE_IsValid(int value) {
-    return ServerUpdate_MESSAGE_TYPE_IsValid(value);
-  }
-  static constexpr MESSAGE_TYPE MESSAGE_TYPE_MIN =
-    ServerUpdate_MESSAGE_TYPE_MESSAGE_TYPE_MIN;
-  static constexpr MESSAGE_TYPE MESSAGE_TYPE_MAX =
-    ServerUpdate_MESSAGE_TYPE_MESSAGE_TYPE_MAX;
-  static constexpr int MESSAGE_TYPE_ARRAYSIZE =
-    ServerUpdate_MESSAGE_TYPE_MESSAGE_TYPE_ARRAYSIZE;
-  template<typename T>
-  static inline const std::string& MESSAGE_TYPE_Name(T enum_t_value) {
-    static_assert(::std::is_same<T, MESSAGE_TYPE>::value ||
-      ::std::is_integral<T>::value,
-      "Incorrect type passed to function MESSAGE_TYPE_Name.");
-    return ServerUpdate_MESSAGE_TYPE_Name(enum_t_value);
-  }
-  static inline bool MESSAGE_TYPE_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
-      MESSAGE_TYPE* value) {
-    return ServerUpdate_MESSAGE_TYPE_Parse(name, value);
-  }
-
   // accessors -------------------------------------------------------
 
   enum : int {
-    kTypeFieldNumber = 1,
+    kArgsFieldNumber = 4,
+    kRequestNumFieldNumber = 1,
+    kRequestTypeFieldNumber = 2,
+    kRequestSubTypeFieldNumber = 3,
   };
-  // .servercontroller.ServerUpdate.MESSAGE_TYPE type = 1;
-  void clear_type();
-  ::servercontroller::ServerUpdate_MESSAGE_TYPE type() const;
-  void set_type(::servercontroller::ServerUpdate_MESSAGE_TYPE value);
+  // repeated string args = 4;
+  int args_size() const;
   private:
-  ::servercontroller::ServerUpdate_MESSAGE_TYPE _internal_type() const;
-  void _internal_set_type(::servercontroller::ServerUpdate_MESSAGE_TYPE value);
+  int _internal_args_size() const;
+  public:
+  void clear_args();
+  const std::string& args(int index) const;
+  std::string* mutable_args(int index);
+  void set_args(int index, const std::string& value);
+  void set_args(int index, std::string&& value);
+  void set_args(int index, const char* value);
+  void set_args(int index, const char* value, size_t size);
+  std::string* add_args();
+  void add_args(const std::string& value);
+  void add_args(std::string&& value);
+  void add_args(const char* value);
+  void add_args(const char* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& args() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_args();
+  private:
+  const std::string& _internal_args(int index) const;
+  std::string* _internal_add_args();
   public:
 
-  // @@protoc_insertion_point(class_scope:servercontroller.ServerUpdate)
+  // uint32 request_num = 1;
+  void clear_request_num();
+  uint32_t request_num() const;
+  void set_request_num(uint32_t value);
+  private:
+  uint32_t _internal_request_num() const;
+  void _internal_set_request_num(uint32_t value);
+  public:
+
+  // .servercontroller.request_t request_type = 2;
+  void clear_request_type();
+  ::servercontroller::request_t request_type() const;
+  void set_request_type(::servercontroller::request_t value);
+  private:
+  ::servercontroller::request_t _internal_request_type() const;
+  void _internal_set_request_type(::servercontroller::request_t value);
+  public:
+
+  // .servercontroller.sub_request_t request_sub_type = 3;
+  void clear_request_sub_type();
+  ::servercontroller::sub_request_t request_sub_type() const;
+  void set_request_sub_type(::servercontroller::sub_request_t value);
+  private:
+  ::servercontroller::sub_request_t _internal_request_sub_type() const;
+  void _internal_set_request_sub_type(::servercontroller::sub_request_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:servercontroller.request)
  private:
   class _Internal;
 
@@ -303,7 +293,10 @@ class ServerUpdate final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    int type_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> args_;
+    uint32_t request_num_;
+    int request_type_;
+    int request_sub_type_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -311,24 +304,24 @@ class ServerUpdate final :
 };
 // -------------------------------------------------------------------
 
-class PlayerModerationMessage final :
-    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:servercontroller.PlayerModerationMessage) */ {
+class response final :
+    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:servercontroller.response) */ {
  public:
-  inline PlayerModerationMessage() : PlayerModerationMessage(nullptr) {}
-  ~PlayerModerationMessage() override;
-  explicit PROTOBUF_CONSTEXPR PlayerModerationMessage(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline response() : response(nullptr) {}
+  ~response() override;
+  explicit PROTOBUF_CONSTEXPR response(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  PlayerModerationMessage(const PlayerModerationMessage& from);
-  PlayerModerationMessage(PlayerModerationMessage&& from) noexcept
-    : PlayerModerationMessage() {
+  response(const response& from);
+  response(response&& from) noexcept
+    : response() {
     *this = ::std::move(from);
   }
 
-  inline PlayerModerationMessage& operator=(const PlayerModerationMessage& from) {
+  inline response& operator=(const response& from) {
     CopyFrom(from);
     return *this;
   }
-  inline PlayerModerationMessage& operator=(PlayerModerationMessage&& from) noexcept {
+  inline response& operator=(response&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -342,20 +335,20 @@ class PlayerModerationMessage final :
     return *this;
   }
 
-  static const PlayerModerationMessage& default_instance() {
+  static const response& default_instance() {
     return *internal_default_instance();
   }
-  static inline const PlayerModerationMessage* internal_default_instance() {
-    return reinterpret_cast<const PlayerModerationMessage*>(
-               &_PlayerModerationMessage_default_instance_);
+  static inline const response* internal_default_instance() {
+    return reinterpret_cast<const response*>(
+               &_response_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     1;
 
-  friend void swap(PlayerModerationMessage& a, PlayerModerationMessage& b) {
+  friend void swap(response& a, response& b) {
     a.Swap(&b);
   }
-  inline void Swap(PlayerModerationMessage* other) {
+  inline void Swap(response* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -368,7 +361,7 @@ class PlayerModerationMessage final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(PlayerModerationMessage* other) {
+  void UnsafeArenaSwap(response* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -376,12 +369,12 @@ class PlayerModerationMessage final :
 
   // implements Message ----------------------------------------------
 
-  PlayerModerationMessage* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<PlayerModerationMessage>(arena);
+  response* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<response>(arena);
   }
   void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)  final;
-  void CopyFrom(const PlayerModerationMessage& from);
-  void MergeFrom(const PlayerModerationMessage& from);
+  void CopyFrom(const response& from);
+  void MergeFrom(const response& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -395,15 +388,15 @@ class PlayerModerationMessage final :
   void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(PlayerModerationMessage* other);
+  void InternalSwap(response* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "servercontroller.PlayerModerationMessage";
+    return "servercontroller.response";
   }
   protected:
-  explicit PlayerModerationMessage(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+  explicit response(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
   public:
 
@@ -411,94 +404,41 @@ class PlayerModerationMessage final :
 
   // nested types ----------------------------------------------------
 
-  typedef PlayerModerationMessage_ACTION_TYPE ACTION_TYPE;
-  static constexpr ACTION_TYPE ACTION_UNSPECIFIED =
-    PlayerModerationMessage_ACTION_TYPE_ACTION_UNSPECIFIED;
-  static constexpr ACTION_TYPE KICK =
-    PlayerModerationMessage_ACTION_TYPE_KICK;
-  static constexpr ACTION_TYPE BAN =
-    PlayerModerationMessage_ACTION_TYPE_BAN;
-  static constexpr ACTION_TYPE UNBAN =
-    PlayerModerationMessage_ACTION_TYPE_UNBAN;
-  static inline bool ACTION_TYPE_IsValid(int value) {
-    return PlayerModerationMessage_ACTION_TYPE_IsValid(value);
-  }
-  static constexpr ACTION_TYPE ACTION_TYPE_MIN =
-    PlayerModerationMessage_ACTION_TYPE_ACTION_TYPE_MIN;
-  static constexpr ACTION_TYPE ACTION_TYPE_MAX =
-    PlayerModerationMessage_ACTION_TYPE_ACTION_TYPE_MAX;
-  static constexpr int ACTION_TYPE_ARRAYSIZE =
-    PlayerModerationMessage_ACTION_TYPE_ACTION_TYPE_ARRAYSIZE;
-  template<typename T>
-  static inline const std::string& ACTION_TYPE_Name(T enum_t_value) {
-    static_assert(::std::is_same<T, ACTION_TYPE>::value ||
-      ::std::is_integral<T>::value,
-      "Incorrect type passed to function ACTION_TYPE_Name.");
-    return PlayerModerationMessage_ACTION_TYPE_Name(enum_t_value);
-  }
-  static inline bool ACTION_TYPE_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
-      ACTION_TYPE* value) {
-    return PlayerModerationMessage_ACTION_TYPE_Parse(name, value);
-  }
-
-  typedef PlayerModerationMessage_IDENTIFIER_TYPE IDENTIFIER_TYPE;
-  static constexpr IDENTIFIER_TYPE IDENTIFIER_UNSPECIFIED =
-    PlayerModerationMessage_IDENTIFIER_TYPE_IDENTIFIER_UNSPECIFIED;
-  static constexpr IDENTIFIER_TYPE UID =
-    PlayerModerationMessage_IDENTIFIER_TYPE_UID;
-  static constexpr IDENTIFIER_TYPE IP =
-    PlayerModerationMessage_IDENTIFIER_TYPE_IP;
-  static inline bool IDENTIFIER_TYPE_IsValid(int value) {
-    return PlayerModerationMessage_IDENTIFIER_TYPE_IsValid(value);
-  }
-  static constexpr IDENTIFIER_TYPE IDENTIFIER_TYPE_MIN =
-    PlayerModerationMessage_IDENTIFIER_TYPE_IDENTIFIER_TYPE_MIN;
-  static constexpr IDENTIFIER_TYPE IDENTIFIER_TYPE_MAX =
-    PlayerModerationMessage_IDENTIFIER_TYPE_IDENTIFIER_TYPE_MAX;
-  static constexpr int IDENTIFIER_TYPE_ARRAYSIZE =
-    PlayerModerationMessage_IDENTIFIER_TYPE_IDENTIFIER_TYPE_ARRAYSIZE;
-  template<typename T>
-  static inline const std::string& IDENTIFIER_TYPE_Name(T enum_t_value) {
-    static_assert(::std::is_same<T, IDENTIFIER_TYPE>::value ||
-      ::std::is_integral<T>::value,
-      "Incorrect type passed to function IDENTIFIER_TYPE_Name.");
-    return PlayerModerationMessage_IDENTIFIER_TYPE_Name(enum_t_value);
-  }
-  static inline bool IDENTIFIER_TYPE_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
-      IDENTIFIER_TYPE* value) {
-    return PlayerModerationMessage_IDENTIFIER_TYPE_Parse(name, value);
-  }
-
   // accessors -------------------------------------------------------
 
   enum : int {
-    kIdentifierFieldNumber = 2,
-    kIdentifierTypeFieldNumber = 1,
+    kIsUnsolicitedResponseFieldNumber = 1,
+    kResponseNumFieldNumber = 2,
+    kResponseTypeFieldNumber = 3,
   };
-  // string identifier = 2;
-  void clear_identifier();
-  const std::string& identifier() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_identifier(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_identifier();
-  PROTOBUF_NODISCARD std::string* release_identifier();
-  void set_allocated_identifier(std::string* identifier);
+  // bool is_unsolicited_response = 1;
+  void clear_is_unsolicited_response();
+  bool is_unsolicited_response() const;
+  void set_is_unsolicited_response(bool value);
   private:
-  const std::string& _internal_identifier() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_identifier(const std::string& value);
-  std::string* _internal_mutable_identifier();
+  bool _internal_is_unsolicited_response() const;
+  void _internal_set_is_unsolicited_response(bool value);
   public:
 
-  // .servercontroller.PlayerModerationMessage.IDENTIFIER_TYPE identifier_type = 1;
-  void clear_identifier_type();
-  ::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE identifier_type() const;
-  void set_identifier_type(::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE value);
+  // uint32 response_num = 2;
+  void clear_response_num();
+  uint32_t response_num() const;
+  void set_response_num(uint32_t value);
   private:
-  ::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE _internal_identifier_type() const;
-  void _internal_set_identifier_type(::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE value);
+  uint32_t _internal_response_num() const;
+  void _internal_set_response_num(uint32_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:servercontroller.PlayerModerationMessage)
+  // .servercontroller.response_t response_type = 3;
+  void clear_response_type();
+  ::servercontroller::response_t response_type() const;
+  void set_response_type(::servercontroller::response_t value);
+  private:
+  ::servercontroller::response_t _internal_response_type() const;
+  void _internal_set_response_type(::servercontroller::response_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:servercontroller.response)
  private:
   class _Internal;
 
@@ -506,170 +446,9 @@ class PlayerModerationMessage final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr identifier_;
-    int identifier_type_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_servercontroller_2eproto;
-};
-// -------------------------------------------------------------------
-
-class ServerControlMessage final :
-    public ::PROTOBUF_NAMESPACE_ID::MessageLite /* @@protoc_insertion_point(class_definition:servercontroller.ServerControlMessage) */ {
- public:
-  inline ServerControlMessage() : ServerControlMessage(nullptr) {}
-  ~ServerControlMessage() override;
-  explicit PROTOBUF_CONSTEXPR ServerControlMessage(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  ServerControlMessage(const ServerControlMessage& from);
-  ServerControlMessage(ServerControlMessage&& from) noexcept
-    : ServerControlMessage() {
-    *this = ::std::move(from);
-  }
-
-  inline ServerControlMessage& operator=(const ServerControlMessage& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline ServerControlMessage& operator=(ServerControlMessage&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ServerControlMessage& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const ServerControlMessage* internal_default_instance() {
-    return reinterpret_cast<const ServerControlMessage*>(
-               &_ServerControlMessage_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    2;
-
-  friend void swap(ServerControlMessage& a, ServerControlMessage& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(ServerControlMessage* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(ServerControlMessage* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  ServerControlMessage* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<ServerControlMessage>(arena);
-  }
-  void CheckTypeAndMergeFrom(const ::PROTOBUF_NAMESPACE_ID::MessageLite& from)  final;
-  void CopyFrom(const ServerControlMessage& from);
-  void MergeFrom(const ServerControlMessage& from);
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  void InternalSwap(ServerControlMessage* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "servercontroller.ServerControlMessage";
-  }
-  protected:
-  explicit ServerControlMessage(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  std::string GetTypeName() const final;
-
-  // nested types ----------------------------------------------------
-
-  typedef ServerControlMessage_MESSAGE_TYPE MESSAGE_TYPE;
-  static constexpr MESSAGE_TYPE MESSAGE_UNSPECIFIED =
-    ServerControlMessage_MESSAGE_TYPE_MESSAGE_UNSPECIFIED;
-  static constexpr MESSAGE_TYPE RELOAD =
-    ServerControlMessage_MESSAGE_TYPE_RELOAD;
-  static constexpr MESSAGE_TYPE CHANGE_LEVEL =
-    ServerControlMessage_MESSAGE_TYPE_CHANGE_LEVEL;
-  static constexpr MESSAGE_TYPE KICK =
-    ServerControlMessage_MESSAGE_TYPE_KICK;
-  static constexpr MESSAGE_TYPE BAN =
-    ServerControlMessage_MESSAGE_TYPE_BAN;
-  static inline bool MESSAGE_TYPE_IsValid(int value) {
-    return ServerControlMessage_MESSAGE_TYPE_IsValid(value);
-  }
-  static constexpr MESSAGE_TYPE MESSAGE_TYPE_MIN =
-    ServerControlMessage_MESSAGE_TYPE_MESSAGE_TYPE_MIN;
-  static constexpr MESSAGE_TYPE MESSAGE_TYPE_MAX =
-    ServerControlMessage_MESSAGE_TYPE_MESSAGE_TYPE_MAX;
-  static constexpr int MESSAGE_TYPE_ARRAYSIZE =
-    ServerControlMessage_MESSAGE_TYPE_MESSAGE_TYPE_ARRAYSIZE;
-  template<typename T>
-  static inline const std::string& MESSAGE_TYPE_Name(T enum_t_value) {
-    static_assert(::std::is_same<T, MESSAGE_TYPE>::value ||
-      ::std::is_integral<T>::value,
-      "Incorrect type passed to function MESSAGE_TYPE_Name.");
-    return ServerControlMessage_MESSAGE_TYPE_Name(enum_t_value);
-  }
-  static inline bool MESSAGE_TYPE_Parse(::PROTOBUF_NAMESPACE_ID::ConstStringParam name,
-      MESSAGE_TYPE* value) {
-    return ServerControlMessage_MESSAGE_TYPE_Parse(name, value);
-  }
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kTypeFieldNumber = 1,
-  };
-  // .servercontroller.ServerControlMessage.MESSAGE_TYPE type = 1;
-  void clear_type();
-  ::servercontroller::ServerControlMessage_MESSAGE_TYPE type() const;
-  void set_type(::servercontroller::ServerControlMessage_MESSAGE_TYPE value);
-  private:
-  ::servercontroller::ServerControlMessage_MESSAGE_TYPE _internal_type() const;
-  void _internal_set_type(::servercontroller::ServerControlMessage_MESSAGE_TYPE value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:servercontroller.ServerControlMessage)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    int type_;
+    bool is_unsolicited_response_;
+    uint32_t response_num_;
+    int response_type_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -684,131 +463,210 @@ class ServerControlMessage final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// ServerUpdate
+// request
 
-// .servercontroller.ServerUpdate.MESSAGE_TYPE type = 1;
-inline void ServerUpdate::clear_type() {
-  _impl_.type_ = 0;
+// uint32 request_num = 1;
+inline void request::clear_request_num() {
+  _impl_.request_num_ = 0u;
 }
-inline ::servercontroller::ServerUpdate_MESSAGE_TYPE ServerUpdate::_internal_type() const {
-  return static_cast< ::servercontroller::ServerUpdate_MESSAGE_TYPE >(_impl_.type_);
+inline uint32_t request::_internal_request_num() const {
+  return _impl_.request_num_;
 }
-inline ::servercontroller::ServerUpdate_MESSAGE_TYPE ServerUpdate::type() const {
-  // @@protoc_insertion_point(field_get:servercontroller.ServerUpdate.type)
-  return _internal_type();
+inline uint32_t request::request_num() const {
+  // @@protoc_insertion_point(field_get:servercontroller.request.request_num)
+  return _internal_request_num();
 }
-inline void ServerUpdate::_internal_set_type(::servercontroller::ServerUpdate_MESSAGE_TYPE value) {
+inline void request::_internal_set_request_num(uint32_t value) {
   
-  _impl_.type_ = value;
+  _impl_.request_num_ = value;
 }
-inline void ServerUpdate::set_type(::servercontroller::ServerUpdate_MESSAGE_TYPE value) {
-  _internal_set_type(value);
-  // @@protoc_insertion_point(field_set:servercontroller.ServerUpdate.type)
+inline void request::set_request_num(uint32_t value) {
+  _internal_set_request_num(value);
+  // @@protoc_insertion_point(field_set:servercontroller.request.request_num)
 }
 
-// -------------------------------------------------------------------
-
-// PlayerModerationMessage
-
-// .servercontroller.PlayerModerationMessage.IDENTIFIER_TYPE identifier_type = 1;
-inline void PlayerModerationMessage::clear_identifier_type() {
-  _impl_.identifier_type_ = 0;
+// .servercontroller.request_t request_type = 2;
+inline void request::clear_request_type() {
+  _impl_.request_type_ = 0;
 }
-inline ::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE PlayerModerationMessage::_internal_identifier_type() const {
-  return static_cast< ::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE >(_impl_.identifier_type_);
+inline ::servercontroller::request_t request::_internal_request_type() const {
+  return static_cast< ::servercontroller::request_t >(_impl_.request_type_);
 }
-inline ::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE PlayerModerationMessage::identifier_type() const {
-  // @@protoc_insertion_point(field_get:servercontroller.PlayerModerationMessage.identifier_type)
-  return _internal_identifier_type();
+inline ::servercontroller::request_t request::request_type() const {
+  // @@protoc_insertion_point(field_get:servercontroller.request.request_type)
+  return _internal_request_type();
 }
-inline void PlayerModerationMessage::_internal_set_identifier_type(::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE value) {
+inline void request::_internal_set_request_type(::servercontroller::request_t value) {
   
-  _impl_.identifier_type_ = value;
+  _impl_.request_type_ = value;
 }
-inline void PlayerModerationMessage::set_identifier_type(::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE value) {
-  _internal_set_identifier_type(value);
-  // @@protoc_insertion_point(field_set:servercontroller.PlayerModerationMessage.identifier_type)
+inline void request::set_request_type(::servercontroller::request_t value) {
+  _internal_set_request_type(value);
+  // @@protoc_insertion_point(field_set:servercontroller.request.request_type)
 }
 
-// string identifier = 2;
-inline void PlayerModerationMessage::clear_identifier() {
-  _impl_.identifier_.ClearToEmpty();
+// .servercontroller.sub_request_t request_sub_type = 3;
+inline void request::clear_request_sub_type() {
+  _impl_.request_sub_type_ = 0;
 }
-inline const std::string& PlayerModerationMessage::identifier() const {
-  // @@protoc_insertion_point(field_get:servercontroller.PlayerModerationMessage.identifier)
-  return _internal_identifier();
+inline ::servercontroller::sub_request_t request::_internal_request_sub_type() const {
+  return static_cast< ::servercontroller::sub_request_t >(_impl_.request_sub_type_);
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void PlayerModerationMessage::set_identifier(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.identifier_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:servercontroller.PlayerModerationMessage.identifier)
+inline ::servercontroller::sub_request_t request::request_sub_type() const {
+  // @@protoc_insertion_point(field_get:servercontroller.request.request_sub_type)
+  return _internal_request_sub_type();
 }
-inline std::string* PlayerModerationMessage::mutable_identifier() {
-  std::string* _s = _internal_mutable_identifier();
-  // @@protoc_insertion_point(field_mutable:servercontroller.PlayerModerationMessage.identifier)
+inline void request::_internal_set_request_sub_type(::servercontroller::sub_request_t value) {
+  
+  _impl_.request_sub_type_ = value;
+}
+inline void request::set_request_sub_type(::servercontroller::sub_request_t value) {
+  _internal_set_request_sub_type(value);
+  // @@protoc_insertion_point(field_set:servercontroller.request.request_sub_type)
+}
+
+// repeated string args = 4;
+inline int request::_internal_args_size() const {
+  return _impl_.args_.size();
+}
+inline int request::args_size() const {
+  return _internal_args_size();
+}
+inline void request::clear_args() {
+  _impl_.args_.Clear();
+}
+inline std::string* request::add_args() {
+  std::string* _s = _internal_add_args();
+  // @@protoc_insertion_point(field_add_mutable:servercontroller.request.args)
   return _s;
 }
-inline const std::string& PlayerModerationMessage::_internal_identifier() const {
-  return _impl_.identifier_.Get();
+inline const std::string& request::_internal_args(int index) const {
+  return _impl_.args_.Get(index);
 }
-inline void PlayerModerationMessage::_internal_set_identifier(const std::string& value) {
-  
-  _impl_.identifier_.Set(value, GetArenaForAllocation());
+inline const std::string& request::args(int index) const {
+  // @@protoc_insertion_point(field_get:servercontroller.request.args)
+  return _internal_args(index);
 }
-inline std::string* PlayerModerationMessage::_internal_mutable_identifier() {
-  
-  return _impl_.identifier_.Mutable(GetArenaForAllocation());
+inline std::string* request::mutable_args(int index) {
+  // @@protoc_insertion_point(field_mutable:servercontroller.request.args)
+  return _impl_.args_.Mutable(index);
 }
-inline std::string* PlayerModerationMessage::release_identifier() {
-  // @@protoc_insertion_point(field_release:servercontroller.PlayerModerationMessage.identifier)
-  return _impl_.identifier_.Release();
+inline void request::set_args(int index, const std::string& value) {
+  _impl_.args_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:servercontroller.request.args)
 }
-inline void PlayerModerationMessage::set_allocated_identifier(std::string* identifier) {
-  if (identifier != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.identifier_.SetAllocated(identifier, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.identifier_.IsDefault()) {
-    _impl_.identifier_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:servercontroller.PlayerModerationMessage.identifier)
+inline void request::set_args(int index, std::string&& value) {
+  _impl_.args_.Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:servercontroller.request.args)
+}
+inline void request::set_args(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.args_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:servercontroller.request.args)
+}
+inline void request::set_args(int index, const char* value, size_t size) {
+  _impl_.args_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:servercontroller.request.args)
+}
+inline std::string* request::_internal_add_args() {
+  return _impl_.args_.Add();
+}
+inline void request::add_args(const std::string& value) {
+  _impl_.args_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:servercontroller.request.args)
+}
+inline void request::add_args(std::string&& value) {
+  _impl_.args_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:servercontroller.request.args)
+}
+inline void request::add_args(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.args_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:servercontroller.request.args)
+}
+inline void request::add_args(const char* value, size_t size) {
+  _impl_.args_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:servercontroller.request.args)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+request::args() const {
+  // @@protoc_insertion_point(field_list:servercontroller.request.args)
+  return _impl_.args_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+request::mutable_args() {
+  // @@protoc_insertion_point(field_mutable_list:servercontroller.request.args)
+  return &_impl_.args_;
 }
 
 // -------------------------------------------------------------------
 
-// ServerControlMessage
+// response
 
-// .servercontroller.ServerControlMessage.MESSAGE_TYPE type = 1;
-inline void ServerControlMessage::clear_type() {
-  _impl_.type_ = 0;
+// bool is_unsolicited_response = 1;
+inline void response::clear_is_unsolicited_response() {
+  _impl_.is_unsolicited_response_ = false;
 }
-inline ::servercontroller::ServerControlMessage_MESSAGE_TYPE ServerControlMessage::_internal_type() const {
-  return static_cast< ::servercontroller::ServerControlMessage_MESSAGE_TYPE >(_impl_.type_);
+inline bool response::_internal_is_unsolicited_response() const {
+  return _impl_.is_unsolicited_response_;
 }
-inline ::servercontroller::ServerControlMessage_MESSAGE_TYPE ServerControlMessage::type() const {
-  // @@protoc_insertion_point(field_get:servercontroller.ServerControlMessage.type)
-  return _internal_type();
+inline bool response::is_unsolicited_response() const {
+  // @@protoc_insertion_point(field_get:servercontroller.response.is_unsolicited_response)
+  return _internal_is_unsolicited_response();
 }
-inline void ServerControlMessage::_internal_set_type(::servercontroller::ServerControlMessage_MESSAGE_TYPE value) {
+inline void response::_internal_set_is_unsolicited_response(bool value) {
   
-  _impl_.type_ = value;
+  _impl_.is_unsolicited_response_ = value;
 }
-inline void ServerControlMessage::set_type(::servercontroller::ServerControlMessage_MESSAGE_TYPE value) {
-  _internal_set_type(value);
-  // @@protoc_insertion_point(field_set:servercontroller.ServerControlMessage.type)
+inline void response::set_is_unsolicited_response(bool value) {
+  _internal_set_is_unsolicited_response(value);
+  // @@protoc_insertion_point(field_set:servercontroller.response.is_unsolicited_response)
+}
+
+// uint32 response_num = 2;
+inline void response::clear_response_num() {
+  _impl_.response_num_ = 0u;
+}
+inline uint32_t response::_internal_response_num() const {
+  return _impl_.response_num_;
+}
+inline uint32_t response::response_num() const {
+  // @@protoc_insertion_point(field_get:servercontroller.response.response_num)
+  return _internal_response_num();
+}
+inline void response::_internal_set_response_num(uint32_t value) {
+  
+  _impl_.response_num_ = value;
+}
+inline void response::set_response_num(uint32_t value) {
+  _internal_set_response_num(value);
+  // @@protoc_insertion_point(field_set:servercontroller.response.response_num)
+}
+
+// .servercontroller.response_t response_type = 3;
+inline void response::clear_response_type() {
+  _impl_.response_type_ = 0;
+}
+inline ::servercontroller::response_t response::_internal_response_type() const {
+  return static_cast< ::servercontroller::response_t >(_impl_.response_type_);
+}
+inline ::servercontroller::response_t response::response_type() const {
+  // @@protoc_insertion_point(field_get:servercontroller.response.response_type)
+  return _internal_response_type();
+}
+inline void response::_internal_set_response_type(::servercontroller::response_t value) {
+  
+  _impl_.response_type_ = value;
+}
+inline void response::set_response_type(::servercontroller::response_t value) {
+  _internal_set_response_type(value);
+  // @@protoc_insertion_point(field_set:servercontroller.response.response_type)
 }
 
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
-// -------------------------------------------------------------------
-
 // -------------------------------------------------------------------
 
 
@@ -818,10 +676,9 @@ inline void ServerControlMessage::set_type(::servercontroller::ServerControlMess
 
 PROTOBUF_NAMESPACE_OPEN
 
-template <> struct is_proto_enum< ::servercontroller::ServerUpdate_MESSAGE_TYPE> : ::std::true_type {};
-template <> struct is_proto_enum< ::servercontroller::PlayerModerationMessage_ACTION_TYPE> : ::std::true_type {};
-template <> struct is_proto_enum< ::servercontroller::PlayerModerationMessage_IDENTIFIER_TYPE> : ::std::true_type {};
-template <> struct is_proto_enum< ::servercontroller::ServerControlMessage_MESSAGE_TYPE> : ::std::true_type {};
+template <> struct is_proto_enum< ::servercontroller::request_t> : ::std::true_type {};
+template <> struct is_proto_enum< ::servercontroller::sub_request_t> : ::std::true_type {};
+template <> struct is_proto_enum< ::servercontroller::response_t> : ::std::true_type {};
 
 PROTOBUF_NAMESPACE_CLOSE
 

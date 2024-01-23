@@ -5,6 +5,9 @@
 #define QUEUE_SIZE 16
 #define QUEUE_NODE_CAPACITY 128
 
+//-----------------------------------------------------------------------------
+// Purpose: Creates and inits the message server.
+//-----------------------------------------------------------------------------
 int CMessage::CreateServer()
 {
 	SECURITY_ATTRIBUTES saAttr = { 0 };
@@ -49,6 +52,11 @@ int CMessage::CreateServer()
 	return 0;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Pushes data into the send queue and triggers the read ready event.
+// Input  : *pData - A pointer to the data to be sent
+//			nSize - The amount of data to be sent
+//-----------------------------------------------------------------------------
 int CMessage::ConnectClient(const CHandle& hMetaData)
 {	
 	std::shared_ptr<CShMem> metaDataFile = std::make_shared<CShMem>(hMetaData, sizeof(Meta));
@@ -65,6 +73,11 @@ int CMessage::ConnectClient(const CHandle& hMetaData)
 	return 0;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Pushes data into the send queue and triggers the read ready event.
+// Input  : *pData - A pointer to the data to be sent
+//			nSize - The amount of data to be sent
+//-----------------------------------------------------------------------------
 size_t CMessage::Tx(const void* pBuff, size_t nSize) const
 {
 	if (nSize > m_pTxQueue->GetNodeBuffSize())
@@ -76,6 +89,10 @@ size_t CMessage::Tx(const void* pBuff, size_t nSize) const
 	return nSize;
 }
 
+//---------------------------------------------------------------------------------
+// Purpose: Checks the message queue for data and calls the callback with the data.
+// Input  : *thisp - A pointer to the CMessage instance to read from
+//---------------------------------------------------------------------------------
 void CMessage::ReadThread(CMessage* thisp)
 {
 	assert(thisp != nullptr);

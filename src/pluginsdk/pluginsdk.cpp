@@ -57,13 +57,13 @@ void CPluginSDK::PipeThreadReader(CPluginSDK* thisp)
 
 void OnHostStateChanged(HostStates_t newState, HostStates_t oldState)
 {
-	servercontroller::ServerUpdate update;
-	update.set_type(servercontroller::ServerUpdate_MESSAGE_TYPE_HOST_STATE_CHANGE);
-	uint16_t buffSize = static_cast<uint16_t>(update.ByteSize());
+	servercontroller::response response;
+	response.set_response_type(servercontroller::CONTROLLER_RESPONSE_HOST_STATE_CHANGE);
+	uint16_t buffSize = static_cast<uint16_t>(response.ByteSize());
 
 	char* buff = new char[buffSize];
 
-	if (update.SerializeToArray(buff, buffSize))
+	if (response.SerializeToArray(buff, buffSize))
 	{
 		g_pMessageLink->Tx(buff, buffSize);
 	}
@@ -73,8 +73,8 @@ void OnHostStateChanged(HostStates_t newState, HostStates_t oldState)
 
 void OnFatalScriptError(const char* contextName)
 {
-	servercontroller::ServerUpdate update;
-	update.set_type(servercontroller::ServerUpdate_MESSAGE_TYPE_FATAL_SCRIPT_ERROR);
+	servercontroller::response update;
+	update.set_response_type(servercontroller::CONTROLLER_RESPONSE_FATAL_SCRIPT_ERROR);
 
 	uint16_t buffSize = static_cast<uint16_t>(update.ByteSize());
 
@@ -90,15 +90,23 @@ void OnFatalScriptError(const char* contextName)
 
 void OnMainMsgRecieve(void* const pData, size_t nBytes, void* pUsr)
 {
-	servercontroller::ServerControlMessage command;
+	servercontroller::request request;
 
-	if (command.ParseFromArray(pData, static_cast<int>(nBytes)))
+	if (request.ParseFromArray(pData, static_cast<int>(nBytes)))
 	{
-		switch (command.type())
+		switch (request.request_type())
 		{
-		case servercontroller::ServerControlMessage_MESSAGE_TYPE_RELOAD:
+		case servercontroller::CONTROLLER_REQUEST_RELOAD:
 		{
 			g_pServerController->Reload();
+			break;
+		}
+		case servercontroller::CONTROLLER_REQUEST_GAME_START:
+		{
+			if (request.args().size() < 2)
+				return;
+
+			g_pServerController->StartGame(request.args()[0].c_str(), request.args()[1].c_str());
 			break;
 		}
 		default:
