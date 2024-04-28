@@ -31,13 +31,16 @@ private:
 
 	IPredictionSystem* m_pNextSystem;
 	bool m_bSuppressEvent;
-	class CBaseEntity* m_pSuppressHost;
+	CBaseEntity* m_pSuppressHost;
 	//[Robotic]:
 	//See comment in CRecipientFilter::AddRecipient
+public:
 	bool m_bAllowRemovals_not_sure;
+private:
 	//
 	int m_nStatusPushed;
 };
 
+static_assert(offsetof(IPredictionSystem, m_bAllowRemovals_not_sure) == 0x20);
 static_assert(sizeof(IPredictionSystem) == 0x28);
 #endif

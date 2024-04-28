@@ -131,6 +131,11 @@ add_sources( SOURCE_GROUP "LiveAPI"
     "server/liveapi/liveapi.h"
 )
 
+add_sources( SOURCE_GROUP "Recipient Filter"
+    "server/recipientfilter.cpp"
+    "server/recipientfilter.h"
+)
+
 add_sources( SOURCE_GROUP "Public"
     "${ENGINE_SOURCE_DIR}/public/iserverentity.h"
     "${ENGINE_SOURCE_DIR}/public/iservernetworkable.h"
