@@ -55,7 +55,7 @@ public:
 	const Vector3D& GetViewOffset(void) const { return m_vecViewOffset; }
 	const Vector3D& GetVecPrevAbsOrigin(void) const { return m_vecPrevAbsOrigin; }
 
-	inline edict_t GetEdict(void) { return NetworkProp()->GetEdict(); }
+	inline edict_t  GetEdict(void) const { return NetworkProp()->GetEdict(); }
 	inline string_t GetEntityName(void) const { return m_iName; }
 
 	inline int		GetFlags(void) const { return m_fFlags; }
