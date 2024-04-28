@@ -90,11 +90,9 @@ void __fastcall CServerGameDLL::OnReceivedSayTextMessage(void* thisptr, int send
 {
 	const CGlobalVars* globals = *g_pGlobals;
 	const bool bTeamChatOnly = sv_override_team_chat_restriction.GetBool() ? sv_forceChatToTeamOnly->GetBool() : isTeamChat;
+	const int nMaxClients = globals->m_nMaxClients;
 
-	if (senderId > globals->m_nMaxPlayers || senderId < 1)
-		return;
-
-	CPlayer* pSenderPlayer = reinterpret_cast<CPlayer*>(globals->m_pEdicts[senderId + 30728]);
+	CPlayer* pSenderPlayer = UTIL_PlayerByIndex(senderId);
 
 	if (!pSenderPlayer || !pSenderPlayer->IsConnected())
 		return;
@@ -120,14 +118,11 @@ void __fastcall CServerGameDLL::OnReceivedSayTextMessage(void* thisptr, int send
 
 	bool bSenderDeadAndCanOnlyTalkToDead = hudchat_dead_can_only_talk_to_other_dead->GetBool() && pSenderPlayer->GetLifeState();
 
-	for (int nRecipientID = 1; nRecipientID <= globals->m_nMaxPlayers; nRecipientID++)
+	for (int nRecipientIndex = 1; nRecipientIndex <= nMaxClients; nRecipientIndex++)
 	{
-		const CPlayer* pRecipientPlayer = reinterpret_cast<const CPlayer*>(globals->m_pEdicts[nRecipientID + 30728]);
+		const CPlayer* pRecipientPlayer = UTIL_PlayerByIndex(nRecipientIndex);
 
-		if (!pRecipientPlayer)
-			continue;
-
-		if (!pRecipientPlayer->IsConnected())
+		if (!pRecipientPlayer || !pRecipientPlayer->IsConnected())
 			continue;
 
 		//If we are only allowed to talk to the dead make sure the recipient is dead
