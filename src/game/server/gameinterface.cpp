@@ -103,7 +103,7 @@ void __fastcall CServerGameDLL::OnReceivedSayTextMessage(void* thisptr, int send
 
 	for (auto& cb : !g_PluginSystem.GetChatMessageCallbacks())
 	{
-		if (!cb.Function()(pSenderPlayer, text, sv_forceChatToTeamOnly->GetBool()))
+		if (!cb.Function()(pSenderPlayer, text, bTeamChatOnly))
 		{
 			if (chat_debug.GetBool())
 			{
