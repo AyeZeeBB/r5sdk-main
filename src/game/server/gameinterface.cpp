@@ -19,6 +19,7 @@
 #include "game/shared/usercmd.h"
 #include "game/server/util_server.h"
 #include "pluginsystem/pluginsystem.h"
+#include "game/server/recipientfilter.h"
 
 //-----------------------------------------------------------------------------
 // This is called when a new game is started. (restart, map)
@@ -80,40 +81,77 @@ ServerClass* CServerGameDLL::GetAllServerClasses(void)
 
 static ConVar chat_debug("chat_debug", "0", FCVAR_RELEASE, "Enables chat-related debug printing.");
 
+static ConVar sv_override_team_chat_restriction("sv_override_team_chat_specification", "0", FCVAR_RELEASE, 
+	"When enabled this allows sv_forceChatToTeamOnly to take control of the team chat restriction.", 
+	"0: Default, 1: Forces the value from sv_forceChatToTeamOnly."
+);
+
 void __fastcall CServerGameDLL::OnReceivedSayTextMessage(void* thisptr, int senderId, const char* text, bool isTeamChat)
 {
 	const CGlobalVars* globals = *g_pGlobals;
-	if (senderId > 0)
+	const bool bTeamChatOnly = sv_override_team_chat_restriction.GetBool() ? sv_forceChatToTeamOnly->GetBool() : isTeamChat;
+
+	if (senderId > globals->m_nMaxPlayers || senderId < 0)
+		return;
+
+	CPlayer* pSenderPlayer = UTIL_PlayerByIndex(senderId);
+
+	if (!pSenderPlayer || !pSenderPlayer->IsConnected())
+		return;
+
+	pSenderPlayer->UpdateLastActiveTime(globals->m_flCurTime);
+
+	for (auto& cb : !g_PluginSystem.GetChatMessageCallbacks())
 	{
-		if (senderId <= globals->m_nMaxPlayers && senderId != 0xFFFF)
+		if (!cb.Function()(pSenderPlayer, text, sv_forceChatToTeamOnly->GetBool()))
 		{
-			CPlayer* player = reinterpret_cast<CPlayer*>(globals->m_pEdicts[senderId + 30728]);
-
-			if (player && player->IsConnected())
+			if (chat_debug.GetBool())
 			{
-				for (auto& cb : !g_PluginSystem.GetChatMessageCallbacks())
-				{
-					if (!cb.Function()(player, text, sv_forceChatToTeamOnly->GetBool()))
-					{
-						if (chat_debug.GetBool())
-						{
-							char moduleName[MAX_PATH] = {};
+				char moduleName[MAX_PATH] = {};
 
-							V_UnicodeToUTF8(V_UnqualifiedFileName(cb.ModuleName()), moduleName, MAX_PATH);
+				V_UnicodeToUTF8(V_UnqualifiedFileName(cb.ModuleName()), moduleName, MAX_PATH);
 
-							Msg(eDLL_T::SERVER, "[%s] Plugin blocked chat message from '%s' (%llu): \"%s\"\n", moduleName, player->GetNetName(), player->GetPlatformUserId(), text);
-						}
-
-						return;
-					}
-				}
+				Msg(eDLL_T::SERVER, "[%s] Plugin blocked chat message from '%s' (%llu): \"%s\"\n", moduleName, pSenderPlayer->GetNetName(), pSenderPlayer->GetPlatformUserId(), text);
 			}
+
+			return;
 		}
 	}
 
-	// set isTeamChat to false so that we can let the convar sv_forceChatToTeamOnly decide whether team chat should be enforced
-	// this isn't a great way of doing it but it works so meh
-	CServerGameDLL__OnReceivedSayTextMessage(thisptr, senderId, text, false);
+	bool bSenderDeadAndCanOnlyTalkToDead = hudchat_dead_can_only_talk_to_other_dead->GetBool() && pSenderPlayer->GetLifeState();
+
+	for (int nRecipientID = 1; nRecipientID <= globals->m_nMaxPlayers; nRecipientID++)
+	{
+		const CPlayer* pRecipientPlayer = reinterpret_cast<CPlayer*>(globals->m_pEdicts[nRecipientID + 30728]);
+
+		if (!pRecipientPlayer)
+			continue;
+
+		if (!pRecipientPlayer->IsConnected())
+			return;
+
+		//If we are only allowed to talk to the dead make sure the recipient is dead
+		if (bSenderDeadAndCanOnlyTalkToDead && !pRecipientPlayer->GetLifeState())
+			return;
+
+		if (pRecipientPlayer != pSenderPlayer &&
+			//If the chat is limited to one team we must check the sender and recipient are on the same team
+			bTeamChatOnly && pSenderPlayer->GetTeamNum() != pRecipientPlayer->GetTeamNum()
+		)
+			return;
+
+		CSingleUserRecipientFilter filter(pRecipientPlayer);
+		filter.MakeReliable();
+
+		v_UserMessageBegin(&filter, "SayText", 2);
+
+		MessageWriteByte(pSenderPlayer->GetEdict());
+		MessageWriteString(text);
+		MessageWriteBool(bTeamChatOnly);
+
+		MessageEnd();
+	}
+	
 }
 
 void DrawServerHitbox(int iEntity)
@@ -197,6 +235,39 @@ void RunFrameServer(double flFrameTime, bool bRunOverlays, bool bUniformUpdate)
 {
 	DrawServerHitboxes(bRunOverlays);
 	v_RunFrameServer(flFrameTime, bRunOverlays, bUniformUpdate);
+}
+
+void MessageEnd( void )
+{
+	Assert(*g_ppMessageBuffer);
+
+	g_pEngineServer->MessageEnd();
+
+	(*g_ppMessageBuffer) = nullptr;
+}
+
+void MessageWriteByte(int iValue)
+{
+	if (!*g_ppMessageBuffer)
+		Error(eDLL_T::ENGINE, EXIT_FAILURE, "WRITE_BYTE called with no active message\n");
+	
+	(*g_ppMessageBuffer)->WriteByte(iValue);
+}
+
+void MessageWriteString(const char* pszString)
+{
+	if (!*g_ppMessageBuffer)
+		Error(eDLL_T::ENGINE, EXIT_FAILURE, "WriteString called with no active message\n");
+	
+	(*g_ppMessageBuffer)->WriteString(pszString);
+}
+
+void MessageWriteBool(bool bValue)
+{
+	if (!*g_ppMessageBuffer)
+		Error(eDLL_T::ENGINE, EXIT_FAILURE, "WriteBool called with no active message\n");
+
+	(*g_ppMessageBuffer)->WriteOneBit(bValue ? 1 : 0);
 }
 
 void VServerGameDLL::Detour(const bool bAttach) const

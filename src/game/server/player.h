@@ -249,6 +249,7 @@ public:
 	void SetTimeBase(float flTimeBase);
 	void SetLastUCmdSimulationRemainderTime(float flRemainderTime);
 	void SetTotalExtraClientCmdTimeAttempted(float flAttemptedTime);
+	void UpdateLastActiveTime(float flTime) { m_lastActiveTime = fmaxf(m_lastActiveTime, flTime); };
 
 	void ProcessUserCmds(CUserCmd* cmds, int numCmds, int totalCmds,
 		int droppedPackets, bool paused);
@@ -264,6 +265,7 @@ public:
 	inline bool IsBot() const { return (GetFlags() & FL_FAKECLIENT) != 0; }
 
 	inline NucleusID_t GetPlatformUserId() const { return m_platformUserId; };
+	float GetLastActiveTime() const { return m_lastActiveTime; };
 
 private:
 	int m_StuckLast;

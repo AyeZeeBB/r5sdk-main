@@ -57,6 +57,7 @@ public:
 
 	inline edict_t  GetEdict(void) const { return NetworkProp()->GetEdict(); }
 	inline string_t GetEntityName(void) const { return m_iName; }
+	int GetTeamNum(void) const { return m_iTeamNum; }
 
 	inline int		GetFlags(void) const { return m_fFlags; }
 	char			GetLifeState(void) const { return m_lifeState; }

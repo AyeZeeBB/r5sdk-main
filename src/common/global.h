@@ -49,6 +49,7 @@ extern ConVar* eula_version;
 extern ConVar* eula_version_accepted;
 
 extern ConVar* language_cvar;
+extern ConVar* hudchat_dead_can_only_talk_to_other_dead;
 
 //-------------------------------------------------------------------------
 // SERVER                                                                 |
