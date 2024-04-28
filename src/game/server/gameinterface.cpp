@@ -128,17 +128,17 @@ void __fastcall CServerGameDLL::OnReceivedSayTextMessage(void* thisptr, int send
 			continue;
 
 		if (!pRecipientPlayer->IsConnected())
-			return;
+			continue;
 
 		//If we are only allowed to talk to the dead make sure the recipient is dead
 		if (bSenderDeadAndCanOnlyTalkToDead && !pRecipientPlayer->GetLifeState())
-			return;
+			continue;
 
 		if (pRecipientPlayer != pSenderPlayer &&
 			//If the chat is limited to one team we must check the sender and recipient are on the same team
 			bTeamChatOnly && pSenderPlayer->GetTeamNum() != pRecipientPlayer->GetTeamNum()
 		)
-			return;
+			continue;
 
 		CSingleUserRecipientFilter filter(pRecipientPlayer);
 		filter.MakeReliable();
