@@ -139,6 +139,7 @@
 #include "game/server/player_command.h"
 #include "game/server/physics_main.h"
 #include "game/server/vscript_server.h"
+#include "game/server/recipientfilter.h"
 #endif // !CLIENT_DLL
 #ifndef DEDICATED
 #include "game/client/viewrender.h"
@@ -666,6 +667,7 @@ void DetourRegister() // Register detour classes to be searched and hooked.
 	REGISTER(VBaseAnimating);
 	REGISTER(VPlayer);
 	REGISTER(VPlayerMove);
+	REGISTER(VRecipientFilter);
 
 #endif // !CLIENT_DLL
 
