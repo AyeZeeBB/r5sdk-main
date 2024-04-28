@@ -81,7 +81,7 @@ ServerClass* CServerGameDLL::GetAllServerClasses(void)
 
 static ConVar chat_debug("chat_debug", "0", FCVAR_RELEASE, "Enables chat-related debug printing.");
 
-static ConVar sv_override_team_chat_restriction("sv_override_team_chat_specification", "0", FCVAR_RELEASE, 
+static ConVar sv_override_team_chat_restriction("sv_override_team_chat_restriction", "0", FCVAR_RELEASE, 
 	"When enabled this allows sv_forceChatToTeamOnly to take control of the team chat restriction.", 
 	"0: Default, 1: Forces the value from sv_forceChatToTeamOnly."
 );
