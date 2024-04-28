@@ -94,7 +94,7 @@ void __fastcall CServerGameDLL::OnReceivedSayTextMessage(void* thisptr, int send
 	if (senderId > globals->m_nMaxPlayers || senderId < 0)
 		return;
 
-	CPlayer* pSenderPlayer = UTIL_PlayerByIndex(senderId);
+	CPlayer* pSenderPlayer = reinterpret_cast<CPlayer*>(globals->m_pEdicts[senderId + 30728]);
 
 	if (!pSenderPlayer || !pSenderPlayer->IsConnected())
 		return;
@@ -122,7 +122,7 @@ void __fastcall CServerGameDLL::OnReceivedSayTextMessage(void* thisptr, int send
 
 	for (int nRecipientID = 1; nRecipientID <= globals->m_nMaxPlayers; nRecipientID++)
 	{
-		const CPlayer* pRecipientPlayer = reinterpret_cast<CPlayer*>(globals->m_pEdicts[nRecipientID + 30728]);
+		const CPlayer* pRecipientPlayer = reinterpret_cast<const CPlayer*>(globals->m_pEdicts[nRecipientID + 30728]);
 
 		if (!pRecipientPlayer)
 			continue;
