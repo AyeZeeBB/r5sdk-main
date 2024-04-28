@@ -20,6 +20,7 @@ add_sources( SOURCE_GROUP "Entity"
 
 add_sources( SOURCE_GROUP "Prediction"
     "shared/predictioncopy.h"
+    "shared/ipredictionsystem.h"
 )
 
 add_sources( SOURCE_GROUP "Animation"
