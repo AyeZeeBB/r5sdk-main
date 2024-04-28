@@ -91,7 +91,7 @@ void __fastcall CServerGameDLL::OnReceivedSayTextMessage(void* thisptr, int send
 	const CGlobalVars* globals = *g_pGlobals;
 	const bool bTeamChatOnly = sv_override_team_chat_restriction.GetBool() ? sv_forceChatToTeamOnly->GetBool() : isTeamChat;
 
-	if (senderId > globals->m_nMaxPlayers || senderId < 0)
+	if (senderId > globals->m_nMaxPlayers || senderId < 1)
 		return;
 
 	CPlayer* pSenderPlayer = reinterpret_cast<CPlayer*>(globals->m_pEdicts[senderId + 30728]);
