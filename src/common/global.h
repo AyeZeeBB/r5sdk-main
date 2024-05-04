@@ -43,6 +43,9 @@ extern ConVar* r_visualizetraces_duration;
 
 extern ConVar* stream_overlay;
 extern ConVar* stream_overlay_mode;
+
+extern ConVar* voice_enabled;
+extern ConVar* voice_forcemicrecord;
 //-------------------------------------------------------------------------
 // SHARED                                                                 |
 extern ConVar* eula_version;

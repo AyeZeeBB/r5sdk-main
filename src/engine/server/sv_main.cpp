@@ -162,6 +162,26 @@ bool SV_ActivateServer()
 	return v_SV_ActivateServer();
 }
 
+
+
+
+
+void SV_WucanitBenou(CClient* const pClient)
+{
+	if (IsTrainingDedi())
+		return;
+
+	if (!sv_voiceenable->GetBool())
+		return;
+
+	if (g_ServerGlobalVariables->m_nMaxClients <= 0)
+		return;
+
+
+	//SVC_VoiceData wucanitbenou(0, )
+
+}
+
 void SV_BroadcastVoiceData(CClient* const cl, const int nBytes, char* const data)
 {
 	if (IsTrainingDedi())

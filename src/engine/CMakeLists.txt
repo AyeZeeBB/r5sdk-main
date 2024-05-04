@@ -140,6 +140,23 @@ add_sources( SOURCE_GROUP "Shared"
     "shared/datablock.h"
 )
 
+add_sources( SOURCE_GROUP "Voice" 
+    "voice.cpp"
+    "voice.h"
+    "voice_gain.h"
+    "voice_record_dsound.cpp"
+    "voice_record_dsound.h"
+    "voice_mixer_controls.cpp"
+    "voice_mixer_controls.h"
+)
+
+add_sources( SOURCE_GROUP "Voice Codecs" 
+   "shared/voice_codecs/opus/VoiceEncoder_Opus.cpp"
+   "shared/voice_codecs/opus/VoiceEncoder_Opus.h"
+   "shared/voice_codecs/voice_codec_frame.cpp"
+   "shared/voice_codecs/voice_codec_frame.h"
+)
+
 if( NOT ${PROJECT_NAME} STREQUAL "engine_ds" )
 add_sources( SOURCE_GROUP "Client" # Client only.
     "client/clientstate.cpp"

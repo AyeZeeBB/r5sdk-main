@@ -127,6 +127,11 @@
 #include "game/shared/usercmd.h"
 #include "game/shared/animation.h"
 #include "game/shared/vscript_shared.h"
+
+#include "engine/voice.h"
+#include "engine/voice_mixer_controls.h"
+#include "engine/voice_record_dsound.h"
+
 #ifndef CLIENT_DLL
 #include "game/server/ai_node.h"
 #include "game/server/ai_network.h"
@@ -157,7 +162,6 @@
 #include "DirtySDK/dirtysock/netconn.h"
 #include "DirtySDK/proto/protossl.h"
 #include "DirtySDK/proto/protowebsocket.h"
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -616,6 +620,10 @@ void DetourRegister() // Register detour classes to be searched and hooked.
 
 	REGISTER(VLocalize);
 
+	REGISTER(VMixerControls);
+	REGISTER(VVoiceRecord_DSound);
+	REGISTER(VVoice);
+	
 #ifndef DEDICATED
 	REGISTER(HVideoMode_Common);
 	REGISTER(VGL_RMain);

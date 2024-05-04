@@ -93,6 +93,9 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE
 
     "localize"
 
+    "libspeexdsp"
+    "${THIRDPARTY_SOURCE_DIR}/opus/lib/opus.lib"
+
     "vscript"
     "game_shared_static"
 )

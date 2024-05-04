@@ -58,6 +58,9 @@ ConVar* r_visualizetraces_duration         = nullptr;
 ConVar* stream_overlay                     = nullptr;
 ConVar* stream_overlay_mode                = nullptr;
 
+ConVar* voice_enabled                      = nullptr;
+ConVar* voice_forcemicrecord			   = nullptr;
+
 ConVar* eula_version                       = nullptr;
 ConVar* eula_version_accepted              = nullptr;
 
@@ -152,7 +155,10 @@ void ConVar_InitShipped(void)
 	eula_version                     = g_pCVar->FindVar("eula_version");
 	eula_version_accepted            = g_pCVar->FindVar("eula_version_accepted");
 
-	language_cvar = g_pCVar->FindVar("language");
+	language_cvar					 = g_pCVar->FindVar("language");
+
+	voice_enabled					 = g_pCVar->FindVar("voice_enabled");
+	voice_forcemicrecord			 = g_pCVar->FindVar("voice_forcemicrecord");
 #ifndef DEDICATED
 	cl_updaterate_mp                 = g_pCVar->FindVar("cl_updaterate_mp");
 	cl_threaded_bone_setup           = g_pCVar->FindVar("cl_threaded_bone_setup");
