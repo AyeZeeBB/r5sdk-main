@@ -8,12 +8,12 @@
 #include "tier0/commandline.h"
 #include "tier1/cvar.h"
 #include "tier1/keyvalues.h"
-#include "rtech/rtech_utils.h"
+#include "rtech/pak/pakstate.h"
 #include "engine/cmodel_bsp.h"
 #include "engine/sys_engine.h"
 #include "geforce/reflex.h"
 #ifndef MATERIALSYSTEM_NODX
-#include "windows/id3dx.h"
+#include "gameui/imgui_system.h"
 #include "materialsystem/cmaterialglue.h"
 #endif // !MATERIALSYSTEM_NODX
 #include "materialsystem/cmaterialsystem.h"
@@ -21,6 +21,17 @@
 #ifndef MATERIALSYSTEM_NODX
 PCLSTATS_DEFINE()
 #endif // MATERIALSYSTEM_NODX
+
+bool CMaterialSystem::Connect(CMaterialSystem* thisptr, const CreateInterfaceFn factory)
+{
+	const bool result = CMaterialSystem__Connect(thisptr, factory);
+	return result;
+}
+
+void CMaterialSystem::Disconnect(CMaterialSystem* thisptr)
+{
+	CMaterialSystem__Disconnect(thisptr);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: initialization of the material system
@@ -111,22 +122,18 @@ void* __fastcall DispatchDrawCall(int64_t a1, uint64_t a2, int a3, int a4, int64
 //---------------------------------------------------------------------------------
 ssize_t SpinPresent(void)
 {
-	// TODO[ AMOS ]: move imgui code to a separate file.
-	extern void DrawImGui();
-	extern void ImGui_Init();
-
-	if (!g_bImGuiInitialized)
-	{
-		ImGui_Init();
-		g_ThreadRenderThreadID = GetCurrentThreadId();
-		g_bImGuiInitialized = true;
-	}
-
-	if (g_pEngine->GetQuitting() == IEngine::QUIT_NOTQUITTING)
-		DrawImGui();
+	ImguiSystem()->RenderFrame();
 
 	const ssize_t val = v_SpinPresent();
 	return val;
+}
+
+void* CMaterialSystem::SwapBuffers(CMaterialSystem* pMatSys)
+{
+	ImguiSystem()->SampleFrame();
+	ImguiSystem()->SwapBuffers();
+
+	return CMaterialSystem__SwapBuffers(pMatSys);
 }
 
 //-----------------------------------------------------------------------------
@@ -138,11 +145,13 @@ ssize_t SpinPresent(void)
 //			bComplain - 
 // Output : pointer to material
 //-----------------------------------------------------------------------------
+static ConVar mat_alwaysComplain("mat_alwaysComplain", "0", FCVAR_RELEASE | FCVAR_MATERIAL_SYSTEM_THREAD, "Always complain when a material is missing");
+
 CMaterialGlue* CMaterialSystem::FindMaterialEx(CMaterialSystem* pMatSys, const char* pMaterialName, uint8_t nMaterialType, int nUnk, bool bComplain)
 {
 	CMaterialGlue* pMaterial = CMaterialSystem__FindMaterialEx(pMatSys, pMaterialName, nMaterialType, nUnk, bComplain);
 
-	if ((bComplain || mat_alwaysComplain->GetBool()) && pMaterial->IsErrorMaterial())
+	if ((bComplain || mat_alwaysComplain.GetBool()) && pMaterial->IsErrorMaterial())
 	{
 		Error(eDLL_T::MS, NO_ERROR, "Material \"%s\" not found; replacing with \"%s\".\n", pMaterialName, pMaterial->GetName());
 	}
@@ -169,10 +178,16 @@ void VMaterialSystem::Detour(const bool bAttach) const
 {
 	DetourSetup(&CMaterialSystem__Init, &CMaterialSystem::Init, bAttach);
 	DetourSetup(&CMaterialSystem__Shutdown, &CMaterialSystem::Shutdown, bAttach);
+
+	DetourSetup(&CMaterialSystem__Connect, &CMaterialSystem::Connect, bAttach);
+	DetourSetup(&CMaterialSystem__Disconnect, &CMaterialSystem::Disconnect, bAttach);
+
 #ifndef MATERIALSYSTEM_NODX
+	DetourSetup(&CMaterialSystem__SwapBuffers, &CMaterialSystem::SwapBuffers, bAttach);
+	DetourSetup(&CMaterialSystem__FindMaterialEx, &CMaterialSystem::FindMaterialEx, bAttach);
+
 	DetourSetup(&v_StreamDB_Init, &StreamDB_Init, bAttach);
 	DetourSetup(&v_DispatchDrawCall, &DispatchDrawCall, bAttach);
 	DetourSetup(&v_SpinPresent, &SpinPresent, bAttach);
-	DetourSetup(&CMaterialSystem__FindMaterialEx, &CMaterialSystem::FindMaterialEx, bAttach);
 #endif // !MATERIALSYSTEM_NODX
 }

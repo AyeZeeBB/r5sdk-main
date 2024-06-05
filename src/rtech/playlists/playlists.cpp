@@ -11,6 +11,19 @@ KeyValues** g_pPlaylistKeyValues = nullptr; // Get the KeyValue for the playlist
 vector<string> g_vAllPlaylists = { "<<null>>" };
 std::mutex g_PlaylistsVecMutex;
 
+/*
+=====================
+Host_ReloadPlaylists_f
+=====================
+*/
+static void Host_ReloadPlaylists_f()
+{
+	v_Playlists_Download_f();
+	Playlists_SDKInit(); // Re-Init playlist.
+}
+
+static ConCommand playlist_reload("playlist_reload", Host_ReloadPlaylists_f, "Reloads the playlists file", FCVAR_RELEASE);
+
 //-----------------------------------------------------------------------------
 // Purpose: Initializes the playlist globals
 //-----------------------------------------------------------------------------
@@ -53,8 +66,6 @@ bool Playlists_Load(const char* pszPlaylist)
 //-----------------------------------------------------------------------------
 bool Playlists_Parse(const char* pszPlaylist)
 {
-	g_szMTVFItemName[0] = '\0'; // Terminate g_szMTVFTaskName to prevent crash while loading playlist.
-
 	CHAR sPlaylistPath[] = "\x77\x27\x35\x2b\x2c\x6c\x2b\x2c\x2b";
 	PCHAR curr = sPlaylistPath;
 	while (*curr)

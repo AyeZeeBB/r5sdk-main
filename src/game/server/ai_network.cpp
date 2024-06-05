@@ -11,6 +11,8 @@ int g_DebugConnectNode1 = -1;
 int g_DebugConnectNode2 = -1;
 #define DebuggingConnect( node1, node2 ) ( ( node1 == g_DebugConnectNode1 && node2 == g_DebugConnectNode2 ) || ( node1 == g_DebugConnectNode2 && node2 == g_DebugConnectNode1 ) )
 
+static ConVar ai_ainDebugConnect("ai_ainDebugConnect", "0", FCVAR_DEVELOPMENTONLY, "Debug AIN node connections");
+
 //-----------------------------------------------------------------------------
 // Purpose: debug logs node connections
 // Input  : node1 - 
@@ -20,7 +22,7 @@ int g_DebugConnectNode2 = -1;
 //-----------------------------------------------------------------------------
 void CAI_Network::DebugConnectMsg(int node1, int node2, const char* pszFormat, ...)
 {
-	if (ai_ainDebugConnect->GetBool())
+	if (ai_ainDebugConnect.GetBool())
 	{
 		if (DebuggingConnect(node1, node2))
 		{
@@ -61,11 +63,13 @@ int CAI_Network::NumLinks(void) const
 
 //-----------------------------------------------------------------------------
 // Purpose: gets the number of zones
+// input  : idx - 
 // Output : int
 //-----------------------------------------------------------------------------
-int CAI_Network::NumZones(void) const
+int CAI_Network::NumZones(const int idx) const
 {
-	return m_iNumZones;
+	Assert(idx >= 0 && idx < sizeof(m_iNumZones));
+	return m_iNumZones[idx];
 }
 
 //-----------------------------------------------------------------------------

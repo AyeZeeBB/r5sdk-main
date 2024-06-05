@@ -13,6 +13,11 @@ void(*ServerScriptRegister_Callback)(CSquirrelVM* s) = nullptr;
 void(*ClientScriptRegister_Callback)(CSquirrelVM* s) = nullptr;
 void(*UiScriptRegister_Callback)(CSquirrelVM* s) = nullptr;
 
+// Callbacks for registering script enums.
+void(*ServerScriptRegisterEnum_Callback)(CSquirrelVM* const s) = nullptr;
+void(*ClientScriptRegisterEnum_Callback)(CSquirrelVM* const s) = nullptr;
+void(*UIScriptRegisterEnum_Callback)(CSquirrelVM* const s) = nullptr;
+
 // Admin panel functions, NULL on client only builds.
 void(*CoreServerScriptRegister_Callback)(CSquirrelVM* s) = nullptr;
 void(*AdminPanelScriptRegister_Callback)(CSquirrelVM* s) = nullptr;
@@ -97,6 +102,60 @@ SQRESULT CSquirrelVM::RegisterConstant(const SQChar* name, SQInteger value)
 }
 
 //---------------------------------------------------------------------------------
+// Purpose: runs text as script on the VM
+// Input  : *script - 
+// Output : true on success, false otherwise
+//---------------------------------------------------------------------------------
+bool CSquirrelVM::Run(const SQChar* const script)
+{
+	Assert(m_hVM);
+
+	bool success = false;
+	SQBufState bufState(script);
+
+	if (SQ_SUCCEEDED(sq_compilebuffer(m_hVM, &bufState, "unnamed", -1, SQTrue)))
+	{
+		SQObject hScript;
+		sq_getstackobj(m_hVM, -1, &hScript);
+
+		sq_addref(m_hVM, &hScript);
+		sq_pop(m_hVM, 1);
+
+		if (ExecuteFunction((HSCRIPT)&hScript, NULL, 0, NULL, NULL) == SCRIPT_DONE)
+			success = true;
+
+		sq_release(m_hVM, &hScript);
+	}
+
+	return success;
+}
+
+//---------------------------------------------------------------------------------
+// Purpose: executes a function by handle
+// Input  : hFunction - 
+//			*pArgs - 
+//			nArgs - 
+//			*pReturn - 
+//			hScope - 
+// Output : SCRIPT_DONE on success, SCRIPT_ERROR otherwise
+//---------------------------------------------------------------------------------
+ScriptStatus_t CSquirrelVM::ExecuteFunction(HSCRIPT hFunction, void** pArgs, unsigned int nArgs, void* pReturn, HSCRIPT hScope)
+{
+	// NOTE: pArgs and pReturn are most likely of type 'ScriptVariant_t', needs to be reversed.
+	return CSquirrelVM__ExecuteFunction(this, hFunction, pArgs, nArgs, pReturn, hScope);
+}
+
+//---------------------------------------------------------------------------------
+// Purpose: executes a code callback
+// Input  : *name - 
+// Output : true on success, false otherwise
+//---------------------------------------------------------------------------------
+bool CSquirrelVM::ExecuteCodeCallback(const SQChar* const name)
+{
+	return CSquirrelVM__ExecuteCodeCallback(this, name);
+}
+
+//---------------------------------------------------------------------------------
 // Purpose: registers a code function
 // Input  : *s - 
 //			*scriptName - 
@@ -145,9 +204,9 @@ void CSquirrelVM::SetAsCompiler(RSON::Node_t* rson)
 //---------------------------------------------------------------------------------
 void CSquirrelVM::CompileModScripts()
 {
-	FOR_EACH_VEC(g_pModSystem->GetModList(), i)
+	FOR_EACH_VEC(ModSystem()->GetModList(), i)
 	{
-		const CModSystem::ModInstance_t* mod = g_pModSystem->GetModList()[i];
+		const CModSystem::ModInstance_t* mod = ModSystem()->GetModList()[i];
 
 		if (!mod->IsEnabled())
 			continue;
@@ -159,7 +218,7 @@ void CSquirrelVM::CompileModScripts()
 		RSON::Node_t* rson = mod->LoadScriptCompileList();
 
 		if (!rson)
-			Error(GetVM()->GetNativeContext(), NO_ERROR, 
+			Error(GetNativeContext(), NO_ERROR, 
 				"%s: Failed to load RSON file '%s'\n", 
 				__FUNCTION__, mod->GetScriptCompileListPath().Get());
 
@@ -197,7 +256,7 @@ void CSquirrelVM::CompileModScripts()
 				scriptPathArray[j] = pszScriptPath;
 			}
 
-			switch (GetVM()->GetContext())
+			switch (GetContext())
 			{
 			case SQCONTEXT::SERVER:
 			{

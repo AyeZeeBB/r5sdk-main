@@ -1,14 +1,18 @@
 #ifndef VSQUIRREL_H
 #define VSQUIRREL_H
+#include "tier1/utlmap.h"
+#include "tier1/utlhash.h"
+#include "tier1/utlbuffer.h"
+
 #include "vscript/languages/squirrel_re/include/squirrel.h"
 #include "vscript/languages/squirrel_re/include/sqstate.h"
 #include "vscript/languages/squirrel_re/include/sqvm.h"
 #include "vscript/ivscript.h"
-#include "vpc/rson.h"
+
+#include "rtech/rson.h"
 
 #define MAX_PRECOMPILED_SCRIPTS 1024
 
-#pragma pack(push, 4)
 class CSquirrelVM
 {
 public:
@@ -21,26 +25,44 @@ public:
 	SQRESULT RegisterFunction(const SQChar* scriptname, const SQChar* nativename, const SQChar* helpstring, const SQChar* returntype, const SQChar* parameters, void* functor);
 	SQRESULT RegisterConstant(const SQChar* name, SQInteger value);
 
-	FORCEINLINE HSQUIRRELVM GetVM() const { return m_sqVM; }
+	FORCEINLINE HSQUIRRELVM GetVM() const { return m_hVM; }
 	FORCEINLINE SQCONTEXT GetContext() const { return m_iContext; }
+	FORCEINLINE eDLL_T GetNativeContext() const { return (eDLL_T)GetContext(); }
+
+	bool Run(const SQChar* const script);
+
+	ScriptStatus_t ExecuteFunction(HSCRIPT hFunction, void** pArgs, unsigned int nArgs, void* pReturn, HSCRIPT hScope);
+	bool ExecuteCodeCallback(const SQChar* const name);
 
 private:
-	SQChar pad0[0x8];
-	HSQUIRRELVM m_sqVM;
-	SQChar pad1[0x8];
-	SQInteger m_nFlags;
-	SQChar pad2[4];
-	SQChar pad3[16];
-	SQChar pad4[4];
+	bool unk_00;
+	SQChar pad0[7];
+	HSQUIRRELVM m_hVM;
+	void* m_hDbg;
+	SQObjectPtr m_ErrorString;
+	SQChar pad3[8];
 	SQInteger m_nTick;
-	SQCONTEXT m_iContext; // 0x38
-	void* m_pCompareFunc;
+	int unk_34;
+	SQCONTEXT m_iContext;
+	SQChar pad6[4];
+	CUtlMap<SQClass*, CUtlHashFastGenericHash> m_TypeMap;
+	CUtlBuffer* m_pBuffer;
+	CUtlMap<void*, void*> m_PtrMap;
+	bool unk_A8;
+	int64_t unk_B0;
+	int64_t unk_B8;
+	bool unk_C0;
+	int64_t unk_C8;
+	int64_t unk_D0;
 };
-#pragma pack(pop)
 
 extern void(*ServerScriptRegister_Callback)(CSquirrelVM* s);
 extern void(*ClientScriptRegister_Callback)(CSquirrelVM* s);
 extern void(*UiScriptRegister_Callback)(CSquirrelVM* s);
+
+extern void(*ServerScriptRegisterEnum_Callback)(CSquirrelVM* const s);
+extern void(*ClientScriptRegisterEnum_Callback)(CSquirrelVM* const s);
+extern void(*UIScriptRegisterEnum_Callback)(CSquirrelVM* const s);
 
 extern void(*CoreServerScriptRegister_Callback)(CSquirrelVM* s);
 extern void(*AdminPanelScriptRegister_Callback)(CSquirrelVM* s);
@@ -59,6 +81,10 @@ inline bool(*CSquirrelVM__PrecompileClientScripts)(CSquirrelVM* vm, SQCONTEXT co
 #ifndef CLIENT_DLL
 inline bool(*CSquirrelVM__PrecompileServerScripts)(CSquirrelVM* vm, SQCONTEXT context, char** scriptArray, int scriptCount);
 #endif
+inline ScriptStatus_t(*CSquirrelVM__ExecuteFunction)(CSquirrelVM* s, HSCRIPT hFunction, void** pArgs, unsigned int nArgs, void* pReturn, HSCRIPT hScope);
+inline bool(*CSquirrelVM__ExecuteCodeCallback)(CSquirrelVM* s, const SQChar* callbackName);
+
+inline bool(*CSquirrelVM__ThrowError)(CSquirrelVM* vm, HSQUIRRELVM v);
 
 #ifndef CLIENT_DLL
 inline CSquirrelVM* g_pServerScript;
@@ -69,6 +95,35 @@ inline CSquirrelVM* g_pClientScript;
 inline CSquirrelVM* g_pUIScript;
 #endif // !DEDICATED
 
+#define DEFINE_SCRIPTENUM_NAMED(s, enumName, startValue, ...) \
+	HSQUIRRELVM const v = s->GetVM(); \
+	const eDLL_T context = static_cast<eDLL_T>(s->GetContext());\
+	sq_startconsttable(v); \
+	sq_pushstring(v, enumName, -1); \
+	sq_newtable(v); \
+	const char* const enumFields[] = { __VA_ARGS__ }; \
+	int enumValue = startValue; \
+	for (int i = 0; i < V_ARRAYSIZE(enumFields); i++) { \
+		sq_pushstring(v, enumFields[i], -1); \
+		sq_pushinteger(v, enumValue++); \
+		if (sq_newslot(v, -3) < 0) \
+			Error(context, EXIT_FAILURE, "Error adding entry '%s' for enum '%s'.", enumFields[i], enumName); \
+	} \
+	if (sq_newslot(v, -3) < 0) \
+		Error(context, EXIT_FAILURE, "Error adding enum '%s' to const table.", enumName); \
+	sq_endconsttable(v); \
+
+// Use this to return from any script func
+#define SCRIPT_CHECK_AND_RETURN(v, val) \
+	{ \
+		SQSharedState* const sharedState = v->_sharedstate; \
+		if (sharedState->_internal_error) { \
+			\
+				CSquirrelVM__ThrowError(sharedState->_scriptvm, v); \
+				return SQ_ERROR; \
+		} \
+		return val; \
+	}
 
 ///////////////////////////////////////////////////////////////////////////////
 class VSquirrel : public IDetour
@@ -86,6 +141,9 @@ class VSquirrel : public IDetour
 #ifndef DEDICATED
 		LogFunAdr("CSquirrelVM::PrecompileClientScripts", CSquirrelVM__PrecompileClientScripts);
 #endif // !DEDICATED
+		LogFunAdr("CSquirrelVM::ExecuteFunction", CSquirrelVM__ExecuteFunction);
+		LogFunAdr("CSquirrelVM::ExecuteCodeCallback", CSquirrelVM__ExecuteCodeCallback);
+		LogFunAdr("CSquirrelVM::ThrowError", CSquirrelVM__ThrowError);
 	}
 	virtual void GetFun(void) const
 	{
@@ -103,6 +161,9 @@ class VSquirrel : public IDetour
 		// cl/ui scripts.rson compiling
 		g_GameDll.FindPatternSIMD("E8 ?? ?? ?? ?? 44 0F B6 F0 48 85 DB").FollowNearCallSelf().GetPtr(CSquirrelVM__PrecompileClientScripts);
 #endif
+		g_GameDll.FindPatternSIMD("E8 ?? ?? ?? ?? 83 FB 5C").FollowNearCallSelf().GetPtr(CSquirrelVM__ExecuteFunction);
+		g_GameDll.FindPatternSIMD("E8 ?? ?? ?? ?? C6 47 1C 01").FollowNearCallSelf().GetPtr(CSquirrelVM__ExecuteCodeCallback);
+		g_GameDll.FindPatternSIMD("E8 ?? ?? ?? ?? BB ?? ?? ?? ?? 8B C3").FollowNearCallSelf().GetPtr(CSquirrelVM__ThrowError);
 	}
 	virtual void GetVar(void) const { }
 	virtual void GetCon(void) const { }

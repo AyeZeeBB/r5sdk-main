@@ -41,6 +41,8 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE
     "wldap32.lib"
     "ws2_32.lib"
     "Rpcrt4.lib"
+    "iphlpapi.lib"
+    "Winmm.lib"
 
     "vpc"
     "memoverride"
@@ -56,21 +58,31 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE
     "vphysics"
 
     "SigCache_Pb"
-    "SV_RCon_Pb"
-    "CL_RCon_Pb"
+    "LiveAPI_Pb"
+    "NetCon_Pb"
 
-    "rtech_tools"
+    "rson"
     "rtech_game"
     "playlists"
     "stryder"
 
-    "libdetours"
     "liblzham"
+    "libzstd"
+    "liblz4"
+
+    "libdetours"
     "libcurl"
     "libprotobuf"
     "libspdlog"
     "libdetour"
     "navdebugutils"
+
+    "EAThread"
+    "DirtySDK"
+
+    "libmbedcrypto"
+    "libmbedtls"
+    "libmbedx509"
 
     "networksystem"
     "pluginsystem"
@@ -106,9 +118,6 @@ endif()
 
 if( NOT ${PROJECT_NAME} STREQUAL "client" )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
-    "libmbedcrypto"
-    "libmbedtls"
-    "libmbedx509"
     "libjwt"
 )
 endif()
@@ -152,6 +161,11 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 )
 
 endif()
+
+target_include_directories( ${PROJECT_NAME} PRIVATE
+	"${THIRDPARTY_SOURCE_DIR}/dirtysdk/include/"
+	"${THIRDPARTY_SOURCE_DIR}/ea/"
+)
 
 target_link_options( ${PROJECT_NAME} PRIVATE
     "/STACK:8000000" # Match game executable stack reserve size

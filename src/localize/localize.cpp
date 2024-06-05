@@ -8,7 +8,7 @@ bool Localize_LoadLocalizationFileLists(CLocalize* thisptr)
 	CLocalize__LoadLocalizationFileLists(thisptr);
 
 	const CUtlVector<CModSystem::ModInstance_t*>&
-		modList = g_pModSystem->GetModList();
+		modList = ModSystem()->GetModList();
 
 	FOR_EACH_VEC(modList, i)
 	{
@@ -32,13 +32,7 @@ bool Localize_LoadLocalizationFileLists(CLocalize* thisptr)
 
 bool Localize_IsLanguageSupported(const char* pLocaleName)
 {
-	for (int i = 0; i < SDK_ARRAYSIZE(g_LanguageNames); ++i)
-	{
-		if (strcmp(pLocaleName, g_LanguageNames[i]) == NULL)
-			return true;
-	}
-
-	return false;
+	return V_LocaleNameExists(pLocaleName);
 }
 
 void VLocalize::Detour(const bool bAttach) const

@@ -9,6 +9,7 @@
 #include "geforce/reflex.h"
 #include "gameui/IConsole.h"
 #include "gameui/IBrowser.h"
+#include "gameui/imgui_system.h"
 #include "engine/framelimit.h"
 #include "engine/sys_mainwind.h"
 #include "inputsystem/inputsystem.h"
@@ -34,7 +35,6 @@ typedef BOOL(WINAPI* IPostMessageA)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM l
 typedef BOOL(WINAPI* IPostMessageW)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 ///////////////////////////////////////////////////////////////////////////////////
-extern BOOL                     g_bImGuiInitialized = FALSE;
 extern UINT                     g_nWindowRect[2] = { NULL, NULL };
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -44,6 +44,9 @@ static IPostMessageW            s_oPostMessageW = NULL;
 ///////////////////////////////////////////////////////////////////////////////////
 static IDXGIResizeBuffers       s_fnResizeBuffers    = NULL;
 static IDXGISwapChainPresent    s_fnSwapChainPresent = NULL;
+
+///////////////////////////////////////////////////////////////////////////////////
+static CFrameLimit s_FrameLimiter;
 
 //#################################################################################
 // WINDOW PROCEDURE
@@ -79,63 +82,36 @@ BOOL WINAPI HPostMessageW(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 }
 
 //#################################################################################
-// IMGUI
-//#################################################################################
-
-void ImGui_Init()
-{
-	///////////////////////////////////////////////////////////////////////////////
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.ImeWindowHandle = g_pGame->GetWindow();
-	io.ConfigFlags |= ImGuiConfigFlags_IsSRGB;
-
-	ImGui_ImplWin32_Init(g_pGame->GetWindow());
-	ImGui_ImplDX11_Init(D3D11Device(), D3D11DeviceContext());
-}
-
-void ImGui_Shutdown()
-{
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-}
-
-void DrawImGui()
-{
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-
-	ImGui::NewFrame();
-
-	// This is required to disable the ctrl+tab menu as some users use this shortcut for other things in-game.
-	// See https://github.com/ocornut/imgui/issues/5641 for more details.
-	if (GImGui->ConfigNavWindowingKeyNext)
-		ImGui::SetShortcutRouting(GImGui->ConfigNavWindowingKeyNext, ImGuiKeyOwner_None);
-	if (GImGui->ConfigNavWindowingKeyPrev)
-		ImGui::SetShortcutRouting(GImGui->ConfigNavWindowingKeyPrev, ImGuiKeyOwner_None);
-
-	g_pBrowser->RunTask();
-	g_pBrowser->RunFrame();
-
-	g_pConsole->RunTask();
-	g_pConsole->RunFrame();
-
-	ImGui::EndFrame();
-	ImGui::Render();
-
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-}
-
-//#################################################################################
 // IDXGI
 //#################################################################################
 
+static ConVar fps_max_rt("fps_max_rt", "0", FCVAR_RELEASE | FCVAR_MATERIAL_SYSTEM_THREAD, "Frame rate limiter within the render thread. -1 indicates the use of desktop refresh. 0 is disabled.", true, -1.f, true, 295.f);
+static ConVar fps_max_rt_tolerance("fps_max_rt_tolerance", "0.25", FCVAR_RELEASE | FCVAR_MATERIAL_SYSTEM_THREAD, "Maximum amount of frame time before frame limiter restarts.", true, 0.f, false, 0.f);
+static ConVar fps_max_rt_sleep_threshold("fps_max_rt_sleep_threshold", "0.016666667", FCVAR_RELEASE | FCVAR_MATERIAL_SYSTEM_THREAD, "Frame limiter starts to sleep when frame time exceeds this threshold.", true, 0.f, false, 0.f);
+
 HRESULT __stdcall Present(IDXGISwapChain* pSwapChain, UINT nSyncInterval, UINT nFlags)
 {
-	g_FrameLimiter.Run();
+	float targetFps = fps_max_rt.GetFloat();
+
+	if (targetFps > 0.0f)
+	{
+		const float globalFps = fps_max->GetFloat();
+
+		// Make sure the global fps limiter is 'unlimited'
+		// before we let the rt frame limiter cap it to
+		// the desktop's refresh rate; not adhering to
+		// this will result in a major performance drop.
+		if (globalFps == 0.0f && targetFps == -1)
+			targetFps = g_pGame->GetTVRefreshRate();
+
+		if (targetFps > 0.0f)
+		{
+			const float sleepThreshold = fps_max_rt_sleep_threshold.GetFloat();
+			const float maxTolerance = fps_max_rt_tolerance.GetFloat();
+
+			s_FrameLimiter.Run(targetFps, sleepThreshold, maxTolerance);
+		}
+	}
 
 	///////////////////////////////////////////////////////////////////////////////
 	// NOTE: -1 since we need to sync this with its corresponding frame, g_FrameNum
@@ -322,12 +298,12 @@ bool LoadTextureBuffer(unsigned char* buffer, int len, ID3D11ShaderResourceView*
 void ResetInput()
 {
 	g_pInputSystem->EnableInput( // Enables the input system when both are not drawn.
-		!g_pBrowser->m_bActivate && !g_pConsole->m_bActivate);
+		!g_Browser.IsActivated() && !g_Console.IsActivated());
 }
 
 bool PanelsVisible()
 {
-	if (g_pBrowser->m_bActivate || g_pConsole->m_bActivate)
+	if (g_Browser.IsActivated() || g_Console.IsActivated())
 	{
 		return true;
 	}
@@ -373,6 +349,9 @@ void DirectX_Init()
 		Assert(0);
 		Error(eDLL_T::COMMON, 0xBAD0C0DE, "Failed to detour process: error code = %08x\n", hr);
 	}
+
+	if (!ImguiSystem()->Init())
+		Error(eDLL_T::COMMON, 0, "ImguiSystem()->Init() failed!\n");
 }
 
 void DirectX_Shutdown()
@@ -392,13 +371,7 @@ void DirectX_Shutdown()
 	// Commit the transaction
 	DetourTransactionCommit();
 
-	///////////////////////////////////////////////////////////////////////////////
-	// Shutdown ImGui
-	if (g_bImGuiInitialized)
-	{
-		ImGui_Shutdown();
-		g_bImGuiInitialized = false;
-	}
+	ImguiSystem()->Shutdown();
 }
 
 void VDXGI::GetAdr(void) const

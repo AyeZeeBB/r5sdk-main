@@ -22,6 +22,9 @@ constexpr int AINET_MINIMUM_SIZE          = 82; // The file is at least this lar
 constexpr const char* AINETWORK_EXT       = ".ain";
 constexpr const char* AINETWORK_PATH      = "maps/graphs/";
 
+
+static ConVar ai_ainDumpOnLoad("ai_ainDumpOnLoad", "0", FCVAR_DEVELOPMENTONLY, "Dumps AIN data from node graphs loaded from the disk on load");
+
 /*
 ==============================
 CAI_NetworkBuilder::BuildFile
@@ -222,19 +225,18 @@ void CAI_NetworkBuilder::SaveNetworkGraph(CAI_Network* pNetwork)
 	// Dump the hull data blocks
 	// -------------------------------
 
-	// Pointer to numZones counter, incremented up and until
-	// the last counter field for the hull data block.
-	int* countPtr = &pNetwork->m_iNumZones;
-
-	for (int i = 0; i < MAX_HULLS; i++, countPtr++)
+	for (int i = 0; i < MAX_HULLS; i++)
 	{
 		const CAI_HullData& hullData = pNetwork->m_HullData[i];
-		const int bufferSize = sizeof(int) * hullData.unk1;
+		const int numHullZones = pNetwork->m_iNumZones[i];
 
-		buf.PutInt(*countPtr);
-		buf.PutShort(hullData.m_Count);
-		buf.PutShort(hullData.unk1);
-		buf.Put(hullData.pBuffer, bufferSize);
+		const unsigned short numHullBits = (unsigned short)hullData.m_bitVec.GetNumBits();
+		const unsigned short numHullInts = (unsigned short)hullData.m_bitVec.GetNumDWords();
+
+		buf.PutInt(numHullZones);
+		buf.PutUnsignedShort(numHullBits);
+		buf.PutUnsignedShort(numHullInts);
+		buf.Put(hullData.m_bitVec.Base(), numHullInts * sizeof(int));
 	}
 
 	timer.End();
@@ -521,7 +523,7 @@ void CAI_NetworkManager::LoadNetworkGraphEx(CAI_NetworkManager* pManager, CUtlBu
 {
 	CAI_NetworkManager__LoadNetworkGraph(pManager, pBuffer, szAIGraphFile);
 
-	if (ai_ainDumpOnLoad->GetBool())
+	if (ai_ainDumpOnLoad.GetBool())
 	{
 		Msg(eDLL_T::SERVER, "Dumping AI Network '%s'\n", szAIGraphFile);
 		CAI_NetworkBuilder::SaveNetworkGraph(pManager->m_pNetwork);

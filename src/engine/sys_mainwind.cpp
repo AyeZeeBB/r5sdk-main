@@ -12,6 +12,7 @@
 #include "engine/keys.h"
 #include "gameui/IConsole.h"
 #include "gameui/IBrowser.h"
+#include "gameui/imgui_system.h"
 
 //-----------------------------------------------------------------------------
 // Purpose: plays the startup video's
@@ -27,37 +28,31 @@ void CGame::PlayStartupVideos(void)
 //-----------------------------------------------------------------------------
 // Purpose: main windows procedure
 //-----------------------------------------------------------------------------
-int CGame::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CGame::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (!g_bImGuiInitialized)
+	if (!ImguiSystem()->IsInitialized())
 		return CGame__WindowProc(hWnd, uMsg, wParam, lParam);
 
-	const IEngine::EngineState_t state = g_pEngine->GetState();
-
-	if (state == IEngine::DLL_CLOSE ||
-		state == IEngine::DLL_RESTART)
-		return CGame__WindowProc(hWnd, uMsg, wParam, lParam);
-
-	ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
+	ImguiSystem()->MessageHandler(hWnd, uMsg, wParam, lParam);
 
 	if (uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN)
 	{
-		if (wParam == g_pImGuiConfig->m_ConsoleConfig.m_nBind0 ||
-			wParam == g_pImGuiConfig->m_ConsoleConfig.m_nBind1)
+		if (wParam == g_ImGuiConfig.m_ConsoleConfig.m_nBind0 ||
+			wParam == g_ImGuiConfig.m_ConsoleConfig.m_nBind1)
 		{
-			g_pConsole->m_bActivate ^= true;
+			g_Console.ToggleActive();
 			ResetInput(); // Disable input to game when console is drawn.
 		}
 
-		if (wParam == g_pImGuiConfig->m_BrowserConfig.m_nBind0 ||
-			wParam == g_pImGuiConfig->m_BrowserConfig.m_nBind1)
+		if (wParam == g_ImGuiConfig.m_BrowserConfig.m_nBind0 ||
+			wParam == g_ImGuiConfig.m_BrowserConfig.m_nBind1)
 		{
-			g_pBrowser->m_bActivate ^= true;
+			g_Browser.ToggleActive();
 			ResetInput(); // Disable input to game when browser is drawn.
 		}
 	}
 
-	if (g_pConsole->m_bActivate || g_pBrowser->m_bActivate)
+	if (g_Console.IsActivated() || g_Browser.IsActivated())
 	{//////////////////////////////////////////////////////////////////////////////
 		g_bBlockInput = true;
 

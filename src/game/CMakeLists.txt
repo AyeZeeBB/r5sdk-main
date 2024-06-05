@@ -7,32 +7,56 @@ start_sources()
 
 if( ${PROJECT_NAME} STREQUAL "game_shared_static" )
 
-add_sources( SOURCE_GROUP "Shared"
+add_sources( SOURCE_GROUP "AI"
     "shared/ai_utility_shared.cpp"
     "shared/ai_utility_shared.h"
-    "shared/animation.cpp"
-    "shared/animation.h"
-    "shared/collisionproperty.cpp"
-    "shared/collisionproperty.h"
+)
+
+add_sources( SOURCE_GROUP "Entity"
     "shared/ehandle.h"
     "shared/entitylist_base.cpp"
     "shared/entitylist_base.h"
-    "shared/imovehelper.h"
-    "shared/playernet_vars.h"
+)
+
+add_sources( SOURCE_GROUP "Prediction"
     "shared/predictioncopy.h"
-    "shared/shared_classnames.h"
-    "shared/shareddefs.h"
-    "shared/takedamageinfo.h"
+)
+
+add_sources( SOURCE_GROUP "Animation"
+    "shared/animation.cpp"
+    "shared/animation.h"
+)
+
+add_sources( SOURCE_GROUP "Collision"
+    "shared/collisionproperty.cpp"
+    "shared/collisionproperty.h"
+)
+
+add_sources( SOURCE_GROUP "Network"
+    "shared/playernet_vars.h"
     "shared/usercmd.cpp"
     "shared/usercmd.h"
     "shared/usermessages.h"
+)
+
+add_sources( SOURCE_GROUP "Utility"
+    "shared/imovehelper.h"
     "shared/util_shared.cpp"
     "shared/util_shared.h"
+)
+
+add_sources( SOURCE_GROUP "Shared"
+    "shared/shared_classnames.h"
+    "shared/shareddefs.h"
+    "shared/takedamageinfo.h"
+)
+
+add_sources( SOURCE_GROUP "Script"
     "shared/vscript_shared.cpp"
     "shared/vscript_shared.h"
 )
 
-add_sources( SOURCE_GROUP "Shared/Weapon"
+add_sources( SOURCE_GROUP "Weapon"
     "shared/r1/weapon_bolt.cpp"
     "shared/r1/weapon_bolt.h"
 )
@@ -41,7 +65,7 @@ endif()
 
 if( ${PROJECT_NAME} STREQUAL "server_static" )
 
-add_sources( SOURCE_GROUP "Server"
+add_sources( SOURCE_GROUP "AI"
     "server/ai_network.cpp"
     "server/ai_network.h"
     "server/ai_networkmanager.cpp"
@@ -49,36 +73,61 @@ add_sources( SOURCE_GROUP "Server"
     "server/ai_node.h"
     "server/ai_utility.cpp"
     "server/ai_utility.h"
+    "server/detour_impl.h"
+)
+
+add_sources( SOURCE_GROUP "Entity"
     "server/baseanimating.cpp"
     "server/baseanimating.h"
     "server/baseanimatingoverlay.h"
     "server/basecombatcharacter.h"
     "server/baseentity.cpp"
     "server/baseentity.h"
-    "server/cbase.cpp"
-    "server/cbase.h"
-    "server/detour_impl.h"
     "server/entitylist.cpp"
     "server/entitylist.h"
     "server/entityoutput.cpp"
     "server/entityoutput.h"
+)
+
+add_sources( SOURCE_GROUP "Network"
+    "server/networkproperty.cpp"
+    "server/networkproperty.h"
+)
+
+add_sources( SOURCE_GROUP "Player"
+    "server/player.cpp"
+    "server/player.h"
+    "server/player_command.cpp"
+    "server/player_command.h"
+    "server/playerlocaldata.h"
+)
+
+add_sources( SOURCE_GROUP "Script"
+    "server/vscript_server.cpp"
+    "server/vscript_server.h"
+)
+
+add_sources( SOURCE_GROUP "Physics"
+    "server/physics_main.cpp"
+    "server/physics_main.h"
+)
+
+add_sources( SOURCE_GROUP "Utility"
+    "server/cbase.cpp"
+    "server/cbase.h"
     "server/gameinterface.cpp"
     "server/gameinterface.h"
     "server/movehelper_server.cpp"
     "server/movehelper_server.h"
-    "server/networkproperty.cpp"
-    "server/networkproperty.h"
-    "server/physics_main.cpp"
-    "server/physics_main.h"
-    "server/player.cpp"
-    "server/player.h"
-    "server/playerlocaldata.h"
     "server/util_server.cpp"
     "server/util_server.h"
     "server/variant_t.cpp"
     "server/variant_t.h"
-    "server/vscript_server.cpp"
-    "server/vscript_server.h"
+)
+
+add_sources( SOURCE_GROUP "LiveAPI"
+    "server/liveapi/liveapi.cpp"
+    "server/liveapi/liveapi.h"
 )
 
 add_sources( SOURCE_GROUP "Public"
@@ -91,22 +140,37 @@ endif()
 
 if( ${PROJECT_NAME} STREQUAL "client_static" )
 
-add_sources( SOURCE_GROUP "Client"
+add_sources( SOURCE_GROUP "Entity"
     "client/c_baseentity.cpp"
     "client/c_baseentity.h"
-    "client/c_baseplayer.h"
     "client/cliententitylist.h"
-    "client/enginesprite.h"
-    "client/hud.h"
+)
+
+add_sources( SOURCE_GROUP "Player"
+    "client/c_baseplayer.h"
+)
+
+add_sources( SOURCE_GROUP "Input"
     "client/input.cpp"
     "client/input.h"
-    "client/movehelper_client.cpp"
-    "client/movehelper_client.h"
+)
+
+add_sources( SOURCE_GROUP "Rendering"
+    "client/enginesprite.h"
+    "client/hud.h"
     "client/spritemodel.cpp"
-    "client/util_client.cpp"
-    "client/util_client.h"
     "client/viewrender.cpp"
     "client/viewrender.h"
+)
+
+add_sources( SOURCE_GROUP "Utility"
+    "client/movehelper_client.cpp"
+    "client/movehelper_client.h"
+    "client/util_client.cpp"
+    "client/util_client.h"
+)
+
+add_sources( SOURCE_GROUP "Script"
     "client/vscript_client.cpp"
     "client/vscript_client.h"
 )
@@ -152,6 +216,7 @@ endif()
 target_include_directories( ${PROJECT_NAME} PRIVATE
     "${ENGINE_SOURCE_DIR}/tier0/"
     "${ENGINE_SOURCE_DIR}/tier1/"
+    "${THIRDPARTY_SOURCE_DIR}/mbedtls/include"
 )
 
 endmacro()

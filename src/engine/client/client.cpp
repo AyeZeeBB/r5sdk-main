@@ -9,13 +9,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////////
 #include "core/stdafx.h"
+#include "mathlib/bitvec.h"
 #include "tier1/cvar.h"
 #include "tier1/strtools.h"
-#include "mathlib/sha256.h"
 #include "engine/server/server.h"
 #include "engine/client/client.h"
 #ifndef CLIENT_DLL
+#include "networksystem/hostmanager.h"
 #include "jwt/include/decode.h"
+#include "mbedtls/include/mbedtls/sha256.h"
 #endif
 
 // Absolute max string cmd length, any character past this will be NULLED.
@@ -64,6 +66,16 @@ static const char JWT_PUBLIC_KEY[] =
 "dwIDAQAB\n"
 "-----END PUBLIC KEY-----\n";
 
+static ConVar sv_onlineAuthEnable("sv_onlineAuthEnable", "1", FCVAR_RELEASE, "Enables the server-side online authentication system");
+
+static ConVar sv_onlineAuthValidateExpiry("sv_onlineAuthValidateExpiry", "1", FCVAR_RELEASE, "Validate the online authentication token 'expiry' claim");
+static ConVar sv_onlineAuthValidateIssuedAt("sv_onlineAuthValidateIssuedAt", "1", FCVAR_RELEASE, "Validate the online authentication token 'issued at' claim");
+
+static ConVar sv_onlineAuthExpiryTolerance("sv_onlineAuthExpiryTolerance", "1", FCVAR_DEVELOPMENTONLY, "The online authentication token 'expiry' claim tolerance in seconds", true, 0.f, true, float(UINT8_MAX), "Must range between [0,255]");
+static ConVar sv_onlineAuthIssuedAtTolerance("sv_onlineAuthIssuedAtTolerance", "30", FCVAR_DEVELOPMENTONLY, "The online authentication token 'issued at' claim tolerance in seconds", true, 0.f, true, float(UINT8_MAX), "Must range between [0,255]");
+
+static ConVar sv_quota_stringCmdsPerSecond("sv_quota_stringCmdsPerSecond", "16", FCVAR_RELEASE, "How many string commands per second clients are allowed to submit, 0 to disallow all string commands", true, 0.f, false, 0.f);
+
 //---------------------------------------------------------------------------------
 // Purpose: check whether this client is authorized to join this server
 // Input  : *playerName  - 
@@ -78,64 +90,66 @@ bool CClient::Authenticate(const char* const playerName, char* const reasonBuf, 
 	if (IsFakeClient() || GetNetChan()->GetRemoteAddress().IsLoopback())
 		return true;
 
-#define FORMAT_ERROR_REASON(fmt, ...) V_snprintf(reasonBuf, reasonBufLen, fmt, ##__VA_ARGS__);
+	l8w8jwt_claim* claims = nullptr;
+	size_t numClaims = 0;
+
+	// formats the error reason, and frees the claims and returns
+#define ERROR_AND_RETURN(fmt, ...) \
+		do {\
+			V_snprintf(reasonBuf, reasonBufLen, fmt, ##__VA_ARGS__); \
+			if (claims) {\
+				l8w8jwt_free_claims(claims, numClaims); \
+			}\
+			return false; \
+		} while(0)\
 
 	KeyValues* const cl_onlineAuthTokenKv = this->m_ConVars->FindKey("cl_onlineAuthToken");
 	KeyValues* const cl_onlineAuthTokenSignature1Kv = this->m_ConVars->FindKey("cl_onlineAuthTokenSignature1");
 	KeyValues* const cl_onlineAuthTokenSignature2Kv = this->m_ConVars->FindKey("cl_onlineAuthTokenSignature2");
 
 	if (!cl_onlineAuthTokenKv || !cl_onlineAuthTokenSignature1Kv)
-	{
-		FORMAT_ERROR_REASON("Missing token");
-		return false;
-	}
+		ERROR_AND_RETURN("Missing token");
 
 	const char* const onlineAuthToken = cl_onlineAuthTokenKv->GetString();
 	const char* const onlineAuthTokenSignature1 = cl_onlineAuthTokenSignature1Kv->GetString();
 	const char* const onlineAuthTokenSignature2 = cl_onlineAuthTokenSignature2Kv->GetString();
 
-	const std::string fullToken = Format("%s.%s%s", onlineAuthToken, onlineAuthTokenSignature1, onlineAuthTokenSignature2);
+	char fullToken[1024]; // enough buffer for 3x255, which is cvar count * userinfo str limit.
+	const int tokenLen = snprintf(fullToken, sizeof(fullToken), "%s.%s%s", 
+		onlineAuthToken, onlineAuthTokenSignature1, onlineAuthTokenSignature2);
+
+	if (tokenLen < 0)
+		ERROR_AND_RETURN("Token stitching failed");
 
 	struct l8w8jwt_decoding_params params;
 	l8w8jwt_decoding_params_init(&params);
 
 	params.alg = L8W8JWT_ALG_RS256;
 
-	params.jwt = (char*)fullToken.c_str();
-	params.jwt_length = fullToken.length();
+	params.jwt = (char*)fullToken;
+	params.jwt_length = tokenLen;
 
 	params.verification_key = (unsigned char*)JWT_PUBLIC_KEY;
-	params.verification_key_length = strlen(JWT_PUBLIC_KEY);
+	params.verification_key_length = sizeof(JWT_PUBLIC_KEY);
 
-	params.validate_exp = sv_onlineAuthValidateExpiry->GetBool();
-	params.exp_tolerance_seconds = (uint8_t)sv_onlineAuthExpiryTolerance->GetInt();
+	params.validate_exp = sv_onlineAuthValidateExpiry.GetBool();
+	params.exp_tolerance_seconds = (uint8_t)sv_onlineAuthExpiryTolerance.GetInt();
 
-	params.validate_iat = sv_onlineAuthValidateIssuedAt->GetBool();
-	params.iat_tolerance_seconds = (uint8_t)sv_onlineAuthIssuedAtTolerance->GetInt();
-
-	l8w8jwt_claim* claims = nullptr;
-	size_t numClaims = 0;
+	params.validate_iat = sv_onlineAuthValidateIssuedAt.GetBool();
+	params.iat_tolerance_seconds = (uint8_t)sv_onlineAuthIssuedAtTolerance.GetInt();
 
 	enum l8w8jwt_validation_result validation_result;
 	const int r = l8w8jwt_decode(&params, &validation_result, &claims, &numClaims);
 
 	if (r != L8W8JWT_SUCCESS)
-	{
-		FORMAT_ERROR_REASON("Code %i", r);
-		l8w8jwt_free_claims(claims, numClaims);
-
-		return false;
-	}
+		ERROR_AND_RETURN("Code %i", r);
 
 	if (validation_result != L8W8JWT_VALID)
 	{
-		char reasonBuffer[256];
+		char reasonBuffer[64];
 		l8w8jwt_get_validation_result_desc(validation_result, reasonBuffer, sizeof(reasonBuffer));
 
-		FORMAT_ERROR_REASON("%s", reasonBuffer);
-		l8w8jwt_free_claims(claims, numClaims);
-
-		return false;
+		ERROR_AND_RETURN("%s", reasonBuffer);
 	}
 
 	bool foundSessionId = false;
@@ -146,39 +160,37 @@ bool CClient::Authenticate(const char* const playerName, char* const reasonBuf, 
 		{
 			const char* const sessionId = claims[i].value;
 
-			const std::string newId = Format(
-				"%lld-%s-%s",
-				this->m_DataBlock.userData,
+			char newId[256];
+			const int idLen = snprintf(newId, sizeof(newId), "%llu-%s-%s",
+				(NucleusID_t)this->m_DataBlock.userData,
 				playerName,
-				g_pMasterServer->GetHostIP().c_str()
-			);
+				g_ServerHostManager.GetHostIP().c_str());
 
-			DevMsg(eDLL_T::SERVER, "%s: newId=%s\n", __FUNCTION__, newId.c_str());
-			const std::string hashedNewId = sha256(newId);
+			if (idLen < 0)
+				ERROR_AND_RETURN("Session ID stitching failed");
 
-			if (hashedNewId.compare(sessionId) != 0)
-			{
-				FORMAT_ERROR_REASON("Token is not authorized for the connecting client");
-				l8w8jwt_free_claims(claims, numClaims);
+			uint8_t sessionHash[32]; // hash decoded from JWT token
+			V_hextobinary(sessionId, strlen(sessionId), sessionHash, sizeof(sessionHash));
 
-				return false;
-			}
+			uint8_t oobHash[32]; // hash of data collected from out of band packet
+			const int shRet = mbedtls_sha256((const uint8_t*)newId, idLen, oobHash, NULL);
+
+			if (shRet != NULL)
+				ERROR_AND_RETURN("Session ID hashing failed");
+
+			if (memcmp(oobHash, sessionHash, sizeof(sessionHash)) != 0)
+				ERROR_AND_RETURN("Token is not authorized for the connecting client");
 
 			foundSessionId = true;
 		}
 	}
 
 	if (!foundSessionId)
-	{
-		FORMAT_ERROR_REASON("No session ID");
-		l8w8jwt_free_claims(claims, numClaims);
-
-		return false;
-	}
+		ERROR_AND_RETURN("No session ID");
 
 	l8w8jwt_free_claims(claims, numClaims);
 
-#undef REJECT_CONNECTION
+#undef ERROR_AND_RETURN
 #endif // !CLIENT_DLL
 
 	return true;
@@ -208,20 +220,20 @@ bool CClient::Connect(const char* szName, CNetChan* pNetChan, bool bFakePlayer,
 
 #define REJECT_CONNECTION(fmt, ...) V_snprintf(szMessage, nMessageSize, fmt, ##__VA_ARGS__);
 
-	if (sv_onlineAuthEnable->GetBool())
+	if (sv_onlineAuthEnable.GetBool())
 	{
 		char authFailReason[512];
 		if (!Authenticate(szName, authFailReason, sizeof(authFailReason)))
 		{
 			REJECT_CONNECTION("Failed to verify authentication token [%s]", authFailReason);
 
-			const bool bEnableLogging = sv_showconnecting->GetBool();
+			const bool bEnableLogging = sv_showconnecting.GetBool();
 			if (bEnableLogging)
 			{
 				const char* const netAdr = pNetChan ? pNetChan->GetAddress() : "<unknown>";
 
-				Warning(eDLL_T::SERVER, "Connection rejected for '%s' ('%llu' failed online authentication!)\n",
-					netAdr, m_nNucleusID);
+				Warning(eDLL_T::SERVER, "Client '%s' ('%llu') failed online authentication! [%s]\n",
+					netAdr, (NucleusID_t)m_DataBlock.userData, authFailReason);
 			}
 
 			return false;
@@ -248,7 +260,7 @@ bool CClient::Connect(const char* szName, CNetChan* pNetChan, bool bFakePlayer,
 bool CClient::VConnect(CClient* pClient, const char* szName, CNetChan* pNetChan, bool bFakePlayer,
 	CUtlVector<NET_SetConVar::cvar_t>* conVars, char* szMessage, int nMessageSize)
 {
-	return pClient->Connect(szName, pNetChan, bFakePlayer, conVars, szMessage, nMessageSize);;
+	return pClient->Connect(szName, pNetChan, bFakePlayer, conVars, szMessage, nMessageSize);
 }
 
 //---------------------------------------------------------------------------------
@@ -288,7 +300,7 @@ void CClient::VActivatePlayer(CClient* pClient)
 #ifndef CLIENT_DLL
 	const CNetChan* pNetChan = pClient->GetNetChan();
 
-	if (pNetChan && sv_showconnecting->GetBool())
+	if (pNetChan && sv_showconnecting.GetBool())
 	{
 		Msg(eDLL_T::SERVER, "Activated player #%d; channel %s(%s) ('%llu')\n",
 			pClient->GetUserID(), pNetChan->GetName(), pNetChan->GetAddress(), pClient->GetNucleusID());
@@ -341,6 +353,35 @@ bool CClient::VSendNetMsgEx(CClient* pClient, CNetMessage* pMsg, bool bLocal, bo
 }
 
 //---------------------------------------------------------------------------------
+// Purpose: write data into data blocks to send to the client
+// Input  : &buf
+//---------------------------------------------------------------------------------
+void CClient::WriteDataBlock(CClient* pClient, bf_write& buf)
+{
+#ifndef CLIENT_DLL
+	if (net_data_block_enabled->GetBool())
+	{
+		buf.WriteUBitLong(net_NOP, NETMSG_TYPE_BITS);
+
+		const int remainingBits = buf.GetNumBitsWritten() % 8;
+
+		if (remainingBits && (8 - remainingBits) > 0)
+		{
+			// fill the last bits in the last byte with NOP
+			buf.WriteUBitLong(net_NOP, 8 - remainingBits);
+		}
+
+		const bool isMultiplayer = g_ServerGlobalVariables->m_nGameMode < GameMode_t::PVE_MODE;
+		pClient->m_DataBlock.sender.WriteDataBlock(buf.GetData(), buf.GetNumBytesWritten(), isMultiplayer, buf.GetDebugName());
+	}
+	else
+	{
+		pClient->m_NetChannel->SendData(buf, true);
+	}
+#endif // !CLIENT_DLL
+}
+
+//---------------------------------------------------------------------------------
 // Purpose: some versions of the binary have an optimization that shifts the 'this'
 // pointer of the CClient structure by 8 bytes to avoid having to cache the vftable
 // pointer if it never get used. Here we shift it back so it aligns again.
@@ -373,7 +414,7 @@ bool CClient::VProcessStringCmd(CClient* pClient, NET_StringCmd* pMsg)
 	CClientExtended* const pSlot = pClient_Adj->GetClientExtended();
 
 	const double flStartTime = Plat_FloatTime();
-	const int nCmdQuotaLimit = sv_quota_stringCmdsPerSecond->GetInt();
+	const int nCmdQuotaLimit = sv_quota_stringCmdsPerSecond.GetInt();
 
 	if (!nCmdQuotaLimit)
 		return true;
@@ -448,7 +489,7 @@ bool CClient::VProcessSetConVar(CClient* pClient, NET_SetConVar* pMsg)
 		bool bFunky = false;
 		for (const char* s = name; *s != '\0'; ++s)
 		{
-			if (!isalnum(*s) && *s != '_')
+			if (!V_isalnum(*s) && *s != '_')
 			{
 				bFunky = true;
 				break;
@@ -484,6 +525,93 @@ bool CClient::VProcessSetConVar(CClient* pClient, NET_SetConVar* pMsg)
 	return true;
 }
 
+//---------------------------------------------------------------------------------
+// Purpose: process voice data
+// Input  : *pClient - (ADJ)
+//			*pMsg - 
+// Output : 
+//---------------------------------------------------------------------------------
+bool CClient::VProcessVoiceData(CClient* pClient, CLC_VoiceData* pMsg)
+{
+#ifndef CLIENT_DLL
+	char voiceDataBuffer[4096];
+	const int bitsRead = pMsg->m_DataIn.ReadBitsClamped(voiceDataBuffer, pMsg->m_nLength);
+
+	if (pMsg->m_DataIn.IsOverflowed())
+		return false;
+
+	CClient* const pAdj = AdjustShiftedThisPointer(pClient);
+	SV_BroadcastVoiceData(pAdj, Bits2Bytes(bitsRead), voiceDataBuffer);
+#endif // !CLIENT_DLL
+
+	return true;
+}
+
+//---------------------------------------------------------------------------------
+// Purpose: process durango voice data
+// Input  : *pClient - (ADJ)
+//			*pMsg - 
+// Output : 
+//---------------------------------------------------------------------------------
+bool CClient::VProcessDurangoVoiceData(CClient* pClient, CLC_DurangoVoiceData* pMsg)
+{
+#ifndef CLIENT_DLL
+	char voiceDataBuffer[4096];
+	const int bitsRead = pMsg->m_DataIn.ReadBitsClamped(voiceDataBuffer, pMsg->m_nLength);
+
+	if (pMsg->m_DataIn.IsOverflowed())
+		return false;
+
+	CClient* const pAdj = AdjustShiftedThisPointer(pClient);
+	SV_BroadcastDurangoVoiceData(pAdj, Bits2Bytes(bitsRead), voiceDataBuffer,
+		pMsg->m_xid, pMsg->m_unknown, pMsg->m_useVoiceStream, pMsg->m_skipXidCheck);
+#endif // !CLIENT_DLL
+
+	return true;
+}
+
+//---------------------------------------------------------------------------------
+// Purpose: set UserCmd time buffer
+// Input  : numUserCmdProcessTicksMax - 
+//			tickInterval - 
+//---------------------------------------------------------------------------------
+void CClientExtended::InitializeMovementTimeForUserCmdProcessing(const int numUserCmdProcessTicksMax, const float tickInterval)
+{
+	// Grant the client some time buffer to execute user commands
+	m_flMovementTimeForUserCmdProcessingRemaining += tickInterval;
+
+	// but never accumulate more than N ticks
+	if (m_flMovementTimeForUserCmdProcessingRemaining > numUserCmdProcessTicksMax * tickInterval)
+		m_flMovementTimeForUserCmdProcessingRemaining = numUserCmdProcessTicksMax * tickInterval;
+}
+
+//---------------------------------------------------------------------------------
+// Purpose: consume UserCmd time buffer
+// Input  : flTimeNeeded -
+// Output : max time allowed for processing
+//---------------------------------------------------------------------------------
+float CClientExtended::ConsumeMovementTimeForUserCmdProcessing(const float flTimeNeeded)
+{
+	if (m_flMovementTimeForUserCmdProcessingRemaining <= 0.0f)
+		return 0.0f;
+	else if (flTimeNeeded > m_flMovementTimeForUserCmdProcessingRemaining + FLT_EPSILON)
+	{
+		const float flResult = m_flMovementTimeForUserCmdProcessingRemaining;
+		m_flMovementTimeForUserCmdProcessingRemaining = 0.0f;
+
+		return flResult;
+	}
+	else
+	{
+		m_flMovementTimeForUserCmdProcessingRemaining -= flTimeNeeded;
+
+		if (m_flMovementTimeForUserCmdProcessingRemaining < 0.0f)
+			m_flMovementTimeForUserCmdProcessingRemaining = 0.0f;
+
+		return flTimeNeeded;
+	}
+}
+
 void VClient::Detour(const bool bAttach) const
 {
 #ifndef CLIENT_DLL
@@ -492,8 +620,11 @@ void VClient::Detour(const bool bAttach) const
 	DetourSetup(&CClient__ActivatePlayer, &CClient::VActivatePlayer, bAttach);
 	DetourSetup(&CClient__SendNetMsgEx, &CClient::VSendNetMsgEx, bAttach);
 	//DetourSetup(&CClient__SendSnapshot, &CClient::VSendSnapshot, bAttach);
+	DetourSetup(&CClient__WriteDataBlock, &CClient::WriteDataBlock, bAttach);
 
 	DetourSetup(&CClient__ProcessStringCmd, &CClient::VProcessStringCmd, bAttach);
 	DetourSetup(&CClient__ProcessSetConVar, &CClient::VProcessSetConVar, bAttach);
+	DetourSetup(&CClient__ProcessVoiceData, &CClient::VProcessVoiceData, bAttach);
+	DetourSetup(&CClient__ProcessDurangoVoiceData, &CClient::VProcessDurangoVoiceData, bAttach);
 #endif // !CLIENT_DLL
 }

@@ -271,6 +271,10 @@ void EngineLoggerSink(LogType_t logType, LogLevel_t logLevel, eDLL_T context,
 		}
 	}
 
+	// If a debugger is attached, emit the text there too
+	if (Plat_IsInDebugSession())
+		Plat_DebugString(message.c_str());
+
 #ifndef _TOOLS
 	// Output is always logged to the file.
 	std::shared_ptr<spdlog::logger> ntlogger = spdlog::get(pszLogger); // <-- Obtain by 'pszLogger'.
@@ -280,9 +284,9 @@ void EngineLoggerSink(LogType_t logType, LogLevel_t logLevel, eDLL_T context,
 	if (bToConsole)
 	{
 #ifndef CLIENT_DLL
-		if (!LoggedFromClient(context) && RCONServer()->ShouldSend(sv_rcon::response_t::SERVERDATA_RESPONSE_CONSOLE_LOG))
+		if (!LoggedFromClient(context) && RCONServer()->ShouldSend(netcon::response_e::SERVERDATA_RESPONSE_CONSOLE_LOG))
 		{
-			RCONServer()->SendEncode(formatted.c_str(), pszUpTime, sv_rcon::response_t::SERVERDATA_RESPONSE_CONSOLE_LOG,
+			RCONServer()->SendEncoded(formatted.c_str(), pszUpTime, netcon::response_e::SERVERDATA_RESPONSE_CONSOLE_LOG,
 				int(context), int(logType));
 		}
 #endif // !CLIENT_DLL
@@ -290,14 +294,14 @@ void EngineLoggerSink(LogType_t logType, LogLevel_t logLevel, eDLL_T context,
 		g_ImGuiLogger->debug(message);
 
 		const string logStreamBuf = g_LogStream.str();
-		g_pConsole->AddLog(ConLog_t(logStreamBuf, overlayColor));
+		g_Console.AddLog(logStreamBuf.c_str(), ImGui::ColorConvertFloat4ToU32(overlayColor));
 
 		// We can only log to the in-game overlay console when the SDK has
 		// been fully initialized, due to the use of ConVar's.
 		if (g_bSdkInitialized && logLevel >= LogLevel_t::LEVEL_NOTIFY)
 		{
 			// Draw to mini console.
-			g_pOverlay->AddLog(overlayContext, logStreamBuf.c_str());
+			g_TextOverlay.AddLog(overlayContext, logStreamBuf.c_str());
 		}
 #endif // !DEDICATED
 	}

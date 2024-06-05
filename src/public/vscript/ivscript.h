@@ -15,15 +15,13 @@ DECLARE_POINTER_HANDLE(HSCRIPT);
 typedef int ScriptDataType_t;
 typedef void* ScriptFunctionBindingStorageType_t;
 
-enum ScriptLanguage_t
-{
-	SL_NONE,
-	SL_GAMEMONKEY,
-	SL_SQUIRREL,
-	SL_LUA,
-	SL_PYTHON,
+//---------------------------------------------------------
 
-	SL_DEFAULT = SL_SQUIRREL
+enum ScriptStatus_t
+{
+	SCRIPT_ERROR = -1,
+	SCRIPT_DONE,
+	SCRIPT_RUNNING,
 };
 
 //---------------------------------------------------------

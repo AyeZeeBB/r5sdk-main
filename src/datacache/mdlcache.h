@@ -18,7 +18,8 @@ public:
 		, m_hFallbackMDL(NULL)
 	{}
 
-	// This must be cleared if 'common.rpak' is getting unloaded!
+	// This must be cleared if 'common.rpak' is getting unloaded, as this pak
+	// contains the default fallback models!!!
 	inline void Clear(void)
 	{
 		m_pFallbackHDR = nullptr;
@@ -175,7 +176,7 @@ struct studioanimcache_t
 	const char* rigName;
 	int unk0;
 	int numSequences;
-	PakPage_t sequences;
+	PakPage_u sequences;
 	int unk1;
 	int unk2;
 };

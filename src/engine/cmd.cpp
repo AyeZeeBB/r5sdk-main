@@ -60,6 +60,10 @@ bool Cbuf_AddTextWithMarkers(const char* const pText, const ECmdExecutionMarker 
 // Input  : *args - 
 // Output : true on success, false otherwise
 //-----------------------------------------------------------------------------
+#ifndef DEDICATED
+ConVar cl_quota_stringCmdsPerSecond("cl_quota_stringCmdsPerSecond", "16", FCVAR_RELEASE, "How many string commands per second user is allowed to submit, 0 to allow all submissions.", true, 0.f, false, 0.f);
+#endif // DEDICATED
+
 bool Cmd_ForwardToServer(const CCommand* args)
 {
 #ifndef DEDICATED
@@ -72,7 +76,7 @@ bool Cmd_ForwardToServer(const CCommand* args)
 		return false;
 
 	const double flStartTime = Plat_FloatTime();
-	const int nCmdQuotaLimit = cl_quota_stringCmdsPerSecond->GetInt();
+	const int nCmdQuotaLimit = cl_quota_stringCmdsPerSecond.GetInt();
 	const char* pszCmdString = nullptr;
 
 	// Special case: "cmd whatever args..." is forwarded as "whatever args...";
@@ -101,9 +105,83 @@ bool Cmd_ForwardToServer(const CCommand* args)
 	}
 	return v_Cmd_ForwardToServer(args);
 #else // !DEDICATED
+	Assert(0);
 	return false; // Client only.
 #endif // DEDICATED
 }
+
+#ifndef CLIENT_DLL
+//-----------------------------------------------------------------------------
+// Purpose: execute commands directly (ignores all protection flags)
+// Input  : *pCommandString - 
+//          *pValueString   - 
+// Output : true on success, false otherwise
+// 
+// NOTE   : this function is dangerous, as it allows execution of any command
+//          without restrictions. Currently, this is only enabled on the
+//          dedicated server for the local console input and RCON, as they both
+//          are considered secure (local console needs physical access to the
+//          terminal application, RCON requires authentication and its protocol
+//          is secure. Do not use this anywhere else without a valid reason !!!
+// 
+// NOTE   : if client support is ever considered (unlikely), then the convar
+//          flag 'FCVAR_MATERIAL_THREAD_MASK' probably needs to be taken into
+//          account as well, also, change the DLL context of the warning to
+//          ENGINE if the client ever utilizes this.
+//-----------------------------------------------------------------------------
+bool Cmd_ExecuteUnrestricted(const char* const pCommandString, const char* const pValueString)
+{
+	ConCommandBase* const pCommandBase = g_pCVar->FindCommandBase(pCommandString);
+
+	if (!pCommandBase)
+	{
+		// Found nothing.
+		Warning(eDLL_T::SERVER, "Command '%s' doesn't exist; request '%s' ignored\n", pCommandString, pValueString);
+		return false;
+	}
+
+	if (pCommandBase->IsFlagSet(FCVAR_SERVER_FRAME_THREAD))
+		ThreadJoinServerJob();
+
+	if (!pCommandBase->IsCommand())
+	{
+		// Here we want to skip over the command string in the value buffer.
+		// So if we got 'sv_cheats 1' in our value buffer, we want to skip
+		// over 'sv_cheats ', so that we are pointing directly to the value.
+		const char* pFound = V_strstr(pValueString, pCommandString);
+		const char* pValue = nullptr;
+
+		if (pFound)
+		{
+			pValue = pFound + V_strlen(pCommandString);
+
+			// Skip any leading space characters.
+			while (*pValue == ' ')
+			{
+				++pValue;
+			}
+		}
+
+		ConVar* const pConVar = reinterpret_cast<ConVar*>(pCommandBase);
+		pConVar->SetValue(pValue ? pValue : pValueString);
+	}
+	else // Invoke command callback directly.
+	{
+		CCommand cmd;
+
+		// Only tokenize if we actually have strings in the value buffer, some
+		// commands (like 'status') don't need any additional parameters.
+		if (VALID_CHARSTAR(pValueString))
+		{
+			cmd.Tokenize(pValueString, cmd_source_t::kCommandSrcCode);
+		}
+
+		v_Cmd_Dispatch(ECommandTarget_t::CBUF_SERVER, pCommandBase, &cmd, false);
+	}
+
+	return true;
+}
+#endif // !CLIENT_DLL
 
 ///////////////////////////////////////////////////////////////////////////////
 void VCmd::Detour(const bool bAttach) const

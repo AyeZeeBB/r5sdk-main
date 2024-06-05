@@ -18,6 +18,11 @@
 #include "thirdparty/lzham/include/lzham_types.h"
 #include "thirdparty/lzham/include/lzham.h"
 
+#include "thirdparty/zstd/zstd.h"
+#include "thirdparty/zstd/decompress/zstd_decompress_internal.h"
+
+#include "thirdparty/lz4/lz4.h"
+
 #include "thirdparty/curl/include/curl/curl.h"
 
 #include "rapidjson/document.h"
@@ -55,10 +60,11 @@
 #pragma warning(pop)
 
 // Tier0 includes.
+#include "tier0/basetypes.h"
+#include "tier0/wchartypes.h"
 #include "tier0/memaddr.h"
 #include "tier0/utility.h"
 #include "tier0/module.h"
-#include "tier0/basetypes.h"
 #include "tier0/platform.h"
 #include "tier0/platwindow.h"
 #include "tier0/annotations.h"

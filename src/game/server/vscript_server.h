@@ -1,5 +1,6 @@
 #ifndef VSCRIPT_SERVER_H
 #define VSCRIPT_SERVER_H
+#include "vscript/languages/squirrel_re/vsquirrel.h"
 
 namespace VScriptCode
 {
@@ -7,6 +8,8 @@ namespace VScriptCode
 	{
 		SQRESULT CreateServer(HSQUIRRELVM v);
 		SQRESULT DestroyServer(HSQUIRRELVM v);
+
+		SQRESULT SetAutoReloadState(HSQUIRRELVM v);
 
 		SQRESULT KickPlayerByName(HSQUIRRELVM v);
 		SQRESULT KickPlayerById(HSQUIRRELVM v);
@@ -17,6 +20,8 @@ namespace VScriptCode
 		SQRESULT GetNumHumanPlayers(HSQUIRRELVM v);
 		SQRESULT GetNumFakeClients(HSQUIRRELVM v);
 
+		SQRESULT GetServerID(HSQUIRRELVM v);
+
 		SQRESULT IsServerActive(HSQUIRRELVM v);
 		SQRESULT IsDedicated(HSQUIRRELVM v);
 	}
@@ -25,6 +30,8 @@ namespace VScriptCode
 void Script_RegisterServerFunctions(CSquirrelVM* s);
 void Script_RegisterCoreServerFunctions(CSquirrelVM* s);
 void Script_RegisterAdminPanelFunctions(CSquirrelVM* s);
+
+void Script_RegisterServerEnums(CSquirrelVM* const s);
 
 #define DEFINE_SERVER_SCRIPTFUNC_NAMED(s, functionName, helpString,     \
 	returnType, parameters)                                             \

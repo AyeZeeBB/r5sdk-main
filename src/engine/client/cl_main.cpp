@@ -29,28 +29,27 @@ void CL_MoveEx()
 	if (!v_Host_ShouldRun())
 		return;
 
-	int commandTick = -1;
-
-	if (cl->m_CurrFrameSnapshot)
-		commandTick = cl->m_CurrFrameSnapshot->m_TickUpdate.m_nCommandTick;
+	const int commandTick = cl->m_CurrFrameSnapshot
+		? cl->m_CurrFrameSnapshot->m_TickUpdate.m_nCommandTick
+		: -1;
 
 	bool sendPacket = true;
-	CNetChan* chan = cl->m_NetChannel;
+	CNetChan* const chan = cl->m_NetChannel;
 
 	// Only perform clamping and packeting if the timescale value is default,
 	// else the timescale change won't be handled in the player's movement.
 	const float hostTimeScale = host_timescale->GetFloat();
 	const bool isTimeScaleDefault = hostTimeScale == 1.0;
 
-	const float minFrameTime = usercmd_frametime_min->GetFloat();
-	const float maxFrameTime = usercmd_frametime_max->GetFloat();
+	const float minFrameTime = usercmd_frametime_min.GetFloat();
+	const float maxFrameTime = usercmd_frametime_max.GetFloat();
 
 	const float netTime = float(*g_pNetTime);
 
 	if (cl->m_flNextCmdTime <= (maxFrameTime * 0.5f) + netTime)
 		sendPacket = chan->CanPacket();
 
-	else if (cl->m_nOutgoingCommandNr - (commandTick+1) < MAX_BACKUP_COMMANDS || isTimeScaleDefault)
+	else if (cl->m_nOutgoingCommandNr - (commandTick+1) < MAX_NEW_COMMANDS || isTimeScaleDefault)
 		sendPacket = false;
 
 	const bool isActive = cl->IsActive();
@@ -70,43 +69,38 @@ void CL_MoveEx()
 
 			float frameTime = 0.0f;
 
-			if (cl_move_use_dt->GetBool())
+			float timeScale;
+			float deltaTime;
+
+			if (isPaused)
 			{
-				float timeScale;
-				float deltaTime;
-
-				if (isPaused)
-				{
-					timeScale = 1.0f;
-					frameTime = movementCallTime - s_lastMovementCall;
-					deltaTime = frameTime;
-				}
-				else
-				{
-					timeScale = hostTimeScale;
-					frameTime = cl->m_flFrameTime + s_LastFrameTime;
-					deltaTime = frameTime / timeScale;
-				}
-
-				// Clamp the frame time to the maximum.
-				if (deltaTime > maxFrameTime)
-					frameTime = timeScale * maxFrameTime;
-
-				// Drop this frame if delta time is below the minimum.
-				const bool dropFrame = (isTimeScaleDefault && deltaTime < minFrameTime);
-
-				// This check originally was 'time < 0.0049999999', but
-				// that caused problems when the framerate was above 190.
-				if (dropFrame)
-				{
-					s_LastFrameTime = frameTime;
-					return;
-				}
-
-				s_LastFrameTime = 0.0;
+				timeScale = 1.0f;
+				frameTime = movementCallTime - s_lastMovementCall;
+				deltaTime = frameTime;
 			}
-			//else if (isPaused)
-			//	// This hlClient virtual call just returns false.
+			else
+			{
+				timeScale = hostTimeScale;
+				frameTime = cl->m_flFrameTime + s_LastFrameTime;
+				deltaTime = frameTime / timeScale;
+			}
+
+			// Clamp the frame time to the maximum.
+			if (deltaTime > maxFrameTime)
+				frameTime = timeScale * maxFrameTime;
+
+			// Drop this frame if delta time is below the minimum.
+			const bool dropFrame = (isTimeScaleDefault && deltaTime < minFrameTime);
+
+			// This check originally was 'time < 0.0049999999', but
+			// that caused problems when the framerate was above 190.
+			if (dropFrame)
+			{
+				s_LastFrameTime = frameTime;
+				return;
+			}
+
+			s_LastFrameTime = 0.0;
 
 			// Create and store usercmd structure.
 			g_pHLClient->CreateMove(nextCommandNr, frameTime, !isPaused);
