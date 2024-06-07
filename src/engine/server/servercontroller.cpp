@@ -16,7 +16,7 @@ void CServerController::SendCommand(const char* pText) const
 void CServerController::Reload() const
 {
 	if (g_pServer->IsActive())
-		v_HostState_ChangeLevelMP(g_pServer->GetMapName(), nullptr);
+		v_HostState_ChangeLevelMP(g_pServer->GetMapName(), "");
 }
 
 void CServerController::StartGame(const char* pGamemode, const char* pMap) const

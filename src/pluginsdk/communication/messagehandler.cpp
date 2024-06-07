@@ -2,8 +2,8 @@
 #include "shmem.h"
 #include <thread>
 
-#define QUEUE_SIZE 16
-#define QUEUE_NODE_CAPACITY 128
+#define QUEUE_SIZE 32
+#define QUEUE_NODE_CAPACITY 4096
 
 //-----------------------------------------------------------------------------
 // Purpose: Creates and inits the message server.
