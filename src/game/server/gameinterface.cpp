@@ -148,7 +148,7 @@ void CServerGameDLL::OnReceivedSayTextMessage(CServerGameDLL* thisptr, int sende
 
 					ScriptVariant_t args[2];
 					args[0] = hPlayerScriptInstance;
-					args[1] = text + V_strlen(sv_chatCmdPrefix.GetString());
+					args[1] = text + V_strlen(prefixString);
 
 					g_pServerScript->ExecuteFunction(hCallbackScript, args, 2, nullptr, 0);
 				}
