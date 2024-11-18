@@ -21,12 +21,15 @@
 #include "networkproperty.h"
 //#include "entitylist.h"
 #include "entityoutput.h"
+#include "vscript/vscript.h"
 
 //-----------------------------------------------------------------------------
 
 typedef void (CBaseEntity::* BASEPTR)(void);
 typedef void (CBaseEntity::* ENTITYFUNCPTR)(CBaseEntity* pOther);
 typedef void (CBaseEntity::* USEPTR)(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+
+inline HSCRIPT(*CBaseEntity__GetScriptInstance)(CBaseEntity* const thisp);
 
 //-----------------------------------------------------------------------------
 // Purpose: think contexts
@@ -57,6 +60,7 @@ public:
 	inline string_t GetEntityName(void) const { return m_iName; }
 
 	inline int		GetFlags(void) const { return m_fFlags; }
+	HSCRIPT			GetScriptInstance() { return CBaseEntity__GetScriptInstance(this); };
 
 protected:
 	void* m_collideable;
@@ -276,5 +280,20 @@ protected:
 	int m_realmsTransmitMaskCachedSerialNumber;
 };
 static_assert(sizeof(CBaseEntity) == 0xB08);
+
+class VBaseEntity : public IDetour 
+{
+	virtual void GetAdr(void) const
+	{
+		LogFunAdr("CBaseEntity::GetScriptInstance", CBaseEntity__GetScriptInstance);
+	}
+	virtual void GetFun(void) const
+	{
+		g_GameDll.FindPatternSIMD("48 8B C4 56 41 56 48 81 EC ? ? ? ? 48 83 B9").GetPtr(CBaseEntity__GetScriptInstance);
+	}
+	virtual void GetVar(void) const {}
+	virtual void GetCon(void) const {}
+	virtual void Detour(const bool bAttach) const {};
+};
 
 #endif // BASEENTITY_H

@@ -270,6 +270,12 @@ public: // Inlines:
 	inline void SetStringCommandQuotaCount(const int iCount) { m_nStringCommandQuotaCount = iCount; }
 	inline int GetStringCommandQuotaCount(void) const { return m_nStringCommandQuotaCount; }
 
+	inline void SetChatCommandQuotaTimeStart(const double flTime) { m_flChatCommandQuotaTimeStart = flTime; }
+	inline double GetChatCommandQuotaTimeStart(void) const { return m_flChatCommandQuotaTimeStart; }
+
+	inline void SetChatCommandQuotaCount(const int iCount) { m_nChatCommandQuotaCount = iCount; }
+	inline int GetChatCommandQuotaCount(void) const { return m_nChatCommandQuotaCount; }
+
 	inline void SetRemainingMovementTimeForUserCmdProcessing(const float flValue) { m_flMovementTimeForUserCmdProcessingRemaining = flValue; }
 	inline float GetRemainingMovementTimeForUserCmdProcessing() const { return m_flMovementTimeForUserCmdProcessingRemaining; }
 
@@ -284,6 +290,9 @@ private:
 	// The start time of the first stringcmd since reset.
 	double m_flStringCommandQuotaTimeStart;
 	int m_nStringCommandQuotaCount;
+
+	double m_flChatCommandQuotaTimeStart;
+	int m_nChatCommandQuotaCount;
 
 	// How much of a movement time buffer can we process from this user?
 	float m_flMovementTimeForUserCmdProcessingRemaining;

@@ -19,6 +19,7 @@
 #include "game/shared/usercmd.h"
 #include "game/server/util_server.h"
 #include "pluginsystem/pluginsystem.h"
+#include "vscript/languages/squirrel_re/vsquirrel.h"
 
 bool CServerGameDLL::DLLInit(CServerGameDLL* thisptr, CreateInterfaceFn appSystemFactory, CreateInterfaceFn physicsFactory,
 	CreateInterfaceFn fileSystemFactory, CGlobalVars* pGlobals)
@@ -87,6 +88,9 @@ ServerClass* CServerGameDLL::GetAllServerClasses(void)
 
 static ConVar chat_debug("chat_debug", "0", FCVAR_RELEASE, "Enables chat-related debug printing.");
 
+static ConVar sv_chatCmdPrefix("sv_chatCmdPrefix", "/", FCVAR_RELEASE, "Sets the prefix needed before a chat message will be sent to the script command handler");
+static ConVar sv_quota_chatCmdsPerSecond("sv_quota_chatCmdsPerSecon", "3", FCVAR_RELEASE, "How many chat commands per second clients are allowed to submit, 0 to disallow all chat commands", true, 0.f, false, 0.f);
+
 void CServerGameDLL::OnReceivedSayTextMessage(CServerGameDLL* thisptr, int senderId, const char* text, bool isTeamChat)
 {
 	if (senderId > 0)
@@ -112,6 +116,45 @@ void CServerGameDLL::OnReceivedSayTextMessage(CServerGameDLL* thisptr, int sende
 
 						return;
 					}
+				}
+
+				const int nCmdQuotaLimit = sv_quota_chatCmdsPerSecond.GetInt();
+				const char* const prefixString = sv_chatCmdPrefix.GetString();
+
+				if (!nCmdQuotaLimit || !VALID_CHARSTAR(text) || !VALID_CHARSTAR(prefixString) || V_strstr(text, prefixString) != text)
+				{
+					return CServerGameDLL__OnReceivedSayTextMessage(thisptr, senderId, text, false);
+				}
+
+				const double flStartTime = Plat_FloatTime();
+
+				const CClient* const pClient = g_pServer->GetClient(senderId - 1);
+				CClientExtended* const pClientExtended = pClient->GetClientExtended();
+
+				if (flStartTime - pClientExtended->GetChatCommandQuotaTimeStart() >= 1.0)
+				{
+					pClientExtended->SetChatCommandQuotaTimeStart(flStartTime);
+					pClientExtended->SetChatCommandQuotaCount(0);
+				}
+
+				pClientExtended->SetChatCommandQuotaCount(pClientExtended->GetChatCommandQuotaCount() + 1);
+
+				if (nCmdQuotaLimit > pClientExtended->GetChatCommandQuotaCount())
+				{
+					const HSCRIPT hPlayerScriptInstance = player->GetScriptInstance();
+					const HSCRIPT hCallbackScript = g_pServerScript->FindFunction("CodeCallback_OnTextChatReceived", "void functionref(entity, string)", nullptr);
+
+					Assert(hCallbackScript != nullptr);
+
+					ScriptVariant_t args[2];
+					args[0] = hPlayerScriptInstance;
+					args[1] = text + V_strlen(sv_chatCmdPrefix.GetString());
+
+					g_pServerScript->ExecuteFunction(hCallbackScript, args, 2, nullptr, 0);
+				}
+				else
+				{
+					DevMsg(eDLL_T::ENGINE, "Chat command rate limit hit by client '%llu'\n", player->GetPlatformUserId());
 				}
 			}
 		}
