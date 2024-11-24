@@ -13,6 +13,7 @@
 #include "tier2/curlutils.h"
 #include "zip/src/ZipFile.h"
 #include "tier2/fileutils.h"
+#include "sdklauncher_utils.h"
 
 #define WINDOW_SIZE_X 400
 #define WINDOW_SIZE_Y 224
@@ -254,49 +255,22 @@ const char* GetControlValue(Forms::Control* pControl)
 	}
 }
 
-
 void CBaseSurface::SaveSettings()
 {
-	CUtlString settingsPath;
-	settingsPath.Format("platform/" SDK_USER_CFG_PATH "%s", LAUNCHER_SETTING_FILE);
-
-	CUtlString settingsDir = settingsPath.DirName();
-
-	const char* pSettingsPath = settingsPath.String();
-	const char* pSettingsDir = settingsDir.String();
-
-	FileSystem()->CreateDirHierarchy(pSettingsDir);
-
-	if (!FileSystem()->IsDirectory(pSettingsDir))
+	KeyValues settings("LauncherSettings");
+	if(!SDKLauncher_ReadSettingsToKV(settings))
 	{
-		Warning(eDLL_T::COMMON, "%s: Failed to create directory: '%s'\n", __FUNCTION__, pSettingsPath);
-		return;
+		Warning(eDLL_T::COMMON, __FUNCTION__": Failed to read launcher settings file\n");
 	}
 
-	KeyValues kv("LauncherSettings");
-	kv.SetInt("version", SDK_LAUNCHER_VERSION);
-
-	KeyValues* sv = new KeyValues("vars");
-
-	if (!sv)
-	{
-		Warning(eDLL_T::COMMON, "%s: Failed to allocate subkey: '%s'\n", __FUNCTION__, "vars");
-		return; // No settings to apply
-	}
-
-	kv.AddSubKey(sv);
+	KeyValues* sv = settings.FindKey("vars");
 
 	sv->SetBool("experimentalBuilds", this->m_ExperimentalBuildsCheckbox->Checked());
 
-	CUtlBuffer outBuf(ssize_t(0), 0, CUtlBuffer::TEXT_BUFFER);
-	kv.RecursiveSaveToFile(outBuf, 0);
-
-	if (!FileSystem()->WriteFile(pSettingsPath, "PLATFORM", outBuf))
+	if(!SDKLauncher_SaveSettingsToFile(settings))
 	{
-		Warning(eDLL_T::COMMON, "%s: Failed to create VDF file: '%s'\n", __FUNCTION__, pSettingsPath);
-		return;
+		Warning(eDLL_T::COMMON, __FUNCTION__": Failed to save settings keyvalues\n");
 	}
-
 }
 
 void CBaseSurface::OnUpdateClick(Forms::Control* Sender)

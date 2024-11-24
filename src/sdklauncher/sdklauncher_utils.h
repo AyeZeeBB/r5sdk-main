@@ -33,4 +33,5 @@ bool SDKLauncher_CheckForUpdate(const bool bPreRelease);
 
 bool SDKLauncher_ForceExistingInstanceOnTop();
 
-
+bool SDKLauncher_ReadSettingsToKV(KeyValues& keyValues);
+bool SDKLauncher_SaveSettingsToFile(KeyValues& keyValues);

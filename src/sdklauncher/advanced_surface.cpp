@@ -10,6 +10,7 @@
 #include "vstdlib/keyvaluessystem.h"
 #include "filesystem/filesystem_std.h"
 #include "tier2/fileutils.h"
+#include "sdklauncher_utils.h"
 
 //-----------------------------------------------------------------------------
 // Purpose: creates a font by name
@@ -621,34 +622,13 @@ void CAdvancedSurface::LoadSettings()
 //-----------------------------------------------------------------------------
 void CAdvancedSurface::SaveSettings()
 {
-	CUtlString settingsPath;
-	settingsPath.Format("platform/" SDK_USER_CFG_PATH "%s", LAUNCHER_SETTING_FILE);
-
-	CUtlString settingsDir = settingsPath.DirName();
-
-	const char* pSettingsPath = settingsPath.String();
-	const char* pSettingsDir = settingsDir.String();
-
-	FileSystem()->CreateDirHierarchy(pSettingsDir);
-
-	if (!FileSystem()->IsDirectory(pSettingsDir))
+	KeyValues settings("LauncherSettings");
+	if (!SDKLauncher_ReadSettingsToKV(settings))
 	{
-		printf("%s: Failed to create directory: '%s'\n", __FUNCTION__, pSettingsPath);
-		return;
+		Warning(eDLL_T::COMMON, __FUNCTION__": Failed to read launcher settings file\n");
 	}
-
-	KeyValues kv("LauncherSettings");
-	kv.SetInt("version", SDK_LAUNCHER_VERSION);
-
-	KeyValues* sv = new KeyValues("vars");
-
-	if (!sv)
-	{
-		printf("%s: Failed to allocate subkey: '%s'\n", __FUNCTION__, "vars");
-		return; // No settings to apply
-	}
-
-	kv.AddSubKey(sv);
+	
+	KeyValues* sv = settings.FindKey("vars");
 
 	// Game.
 	sv->SetString("playlistsFile", this->m_PlaylistFileTextBox->Text().ToCString());
@@ -676,13 +656,9 @@ void CAdvancedSurface::SaveSettings()
 	sv->SetString("width", this->m_WidthTextBox->Text().ToCString());
 	sv->SetString("height", this->m_HeightTextBox->Text().ToCString());
 
-	CUtlBuffer outBuf(ssize_t(0), 0, CUtlBuffer::TEXT_BUFFER);
-	kv.RecursiveSaveToFile(outBuf, 0);
-
-	if (!FileSystem()->WriteFile(pSettingsPath, "PLATFORM", outBuf))
+	if (!SDKLauncher_SaveSettingsToFile(settings))
 	{
-		printf("%s: Failed to create VDF file: '%s'\n", __FUNCTION__, pSettingsPath);
-		return;
+		Warning(eDLL_T::COMMON, __FUNCTION__": Failed to save settings keyvalues\n");
 	}
 }
 

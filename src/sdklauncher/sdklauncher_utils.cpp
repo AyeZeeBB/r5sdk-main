@@ -985,3 +985,59 @@ bool SDKLauncher_ForceExistingInstanceOnTop()
 
 	return false;
 }
+
+bool SDKLauncher_ReadSettingsToKV(KeyValues& ppKeyValues)
+{	
+	static CUtlString settingsPath("platform/" SDK_USER_CFG_PATH LAUNCHER_SETTING_FILE);
+	static CUtlString settingsDir = settingsPath.DirName();
+
+	const char* pSettingsPath = settingsPath.String();
+	const char* pSettingsDir = settingsDir.String();
+
+	if (!FileSystem()->FileExists(pSettingsPath))
+	{
+		FileSystem()->CreateDirHierarchy(pSettingsDir);
+
+		if (!FileSystem()->IsDirectory(pSettingsDir))
+		{
+			Warning(eDLL_T::COMMON, __FUNCTION__": Failed to create directory: '%s'\n", pSettingsPath);
+			return false;
+		}
+
+		ppKeyValues.SetInt("version", SDK_LAUNCHER_VERSION);
+
+		KeyValues* sv = new KeyValues("vars");
+
+		if (!sv)
+		{
+			Warning(eDLL_T::COMMON, __FUNCTION__": Failed to allocate subkey: " "vars" "\n" );
+			return false;
+		}
+
+		ppKeyValues.AddSubKey(sv);
+	}
+	else
+	{
+		if (!ppKeyValues.LoadFromFile(FileSystem(), pSettingsPath, nullptr))
+		{
+			Warning(eDLL_T::COMMON, __FUNCTION__": Failed to load key values from file\n");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool SDKLauncher_SaveSettingsToFile(KeyValues& keyValues)
+{
+	CUtlBuffer outBuf(ssize_t(0), 0, CUtlBuffer::TEXT_BUFFER);
+	keyValues.RecursiveSaveToFile(outBuf, 0);
+
+	if (!FileSystem()->WriteFile(BASE_PLATFORM_DIR SDK_USER_CFG_PATH LAUNCHER_SETTING_FILE, "PLATFORM", outBuf))
+	{
+		Warning(eDLL_T::COMMON, __FUNCTION__": Failed to create VDF file: '%s'\n", BASE_PLATFORM_DIR SDK_USER_CFG_PATH LAUNCHER_SETTING_FILE);
+		return false;
+	}
+
+	return true;
+}
