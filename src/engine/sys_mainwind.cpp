@@ -60,7 +60,7 @@ LRESULT CGame::ImguiWindowProc(HWND hWnd, UINT& uMsg, WPARAM wParam, LPARAM lPar
 		}
 	}
 
-	if (g_Console.IsActivated() || g_Browser.IsActivated())
+	if (ImguiSystem()->IsSurfaceActive())
 	{//////////////////////////////////////////////////////////////////////////////
 		hr = ImguiSystem()->MessageHandler(hWnd, uMsg, wParam, lParam);
 
@@ -83,16 +83,14 @@ LRESULT CGame::ImguiWindowProc(HWND hWnd, UINT& uMsg, WPARAM wParam, LPARAM lPar
 	}//////////////////////////////////////////////////////////////////////////////
 	else
 	{
-		if (g_bBlockInput)
+		if (g_bBlockInput.exchange(false))
 		{
-			// Dry run with null msg to clear the event queue, we have to do this as
-			// the menu's can be closed while still holding down a key. That key will
-			// remain in the event queue so the next time a window is opened, that
-			// key will be spammed until that particular key msg is sent here again.
-			hr = ImguiSystem()->MessageHandler(hWnd, WM_NULL, wParam, lParam);
+			// Dry run with kill focus msg to clear the keydown state, we have to do
+			// this as the menu's can be closed while still holding down a key. That
+			// key will remain pressed down so the next time a window is opened that
+			// key will be spammed, until that particular key msg is sent here again.
+			hr = ImguiSystem()->MessageHandler(hWnd, WM_KILLFOCUS, wParam, lParam);
 		}
-
-		g_bBlockInput = false;
 	}
 
 	return hr;
@@ -119,6 +117,24 @@ void CGame::GetWindowRect(int* const x, int* const y, int* const w, int* const h
 	{
 		*h = m_height;
 	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: sets the window position
+//-----------------------------------------------------------------------------
+void CGame::SetWindowPosition(const int x, const int y)
+{
+	m_x = x;
+	m_y = y;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: sets the window size
+//-----------------------------------------------------------------------------
+void CGame::SetWindowSize(const int w, const int h)
+{
+	m_width = w;
+	m_height = h;
 }
 
 //-----------------------------------------------------------------------------

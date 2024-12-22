@@ -234,6 +234,7 @@ bool CClientState::_ProcessStringCmd(CClientState* thisptr, NET_StringCmd* msg)
 
     if (thisptr_ADJ->m_bRestrictServerCommands
 #ifndef CLIENT_DLL
+        // Don't restrict commands if we are on our own listen server
         && !g_pServer->IsActive()
 #endif // !CLIENT_DLL
         )

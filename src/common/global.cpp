@@ -274,12 +274,14 @@ void ConVar_InitShipped(void)
 
 	mp_gamemode->RemoveFlags(FCVAR_DEVELOPMENTONLY);
 
-#ifdef DEDICATED 
-	// The base callback is for client builds only, must be removed from the
-	// dedicated server as it features client globals.
+	// The base callback is for client builds only, must be replaced with the
+	// dedicated server variant as the original one runs this through
+	// CEngineClient::SetupGamemode(). The callback is effectively the same
+	// with the exception that it calls SetupGamemode directly, and not
+	// through an interface like CEngineClient.
 	mp_gamemode->RemoveChangeCallback(mp_gamemode->GetChangeCallback(0), 0);
-#endif // DEDICATED
 	mp_gamemode->InstallChangeCallback(MP_GameMode_Changed_f, nullptr, false);
+
 	net_usesocketsforloopback->RemoveFlags(FCVAR_DEVELOPMENTONLY);
 #ifndef DEDICATED
 	language_cvar->InstallChangeCallback(LanguageChanged_f, nullptr, false);
