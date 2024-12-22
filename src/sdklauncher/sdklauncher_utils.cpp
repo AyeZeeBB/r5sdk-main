@@ -130,14 +130,14 @@ bool GetDepotEntry(const rapidjson::Document& manifest, const char* const target
 	{
 		for (rapidjson::Value::ConstMemberIterator itr = depotList->MemberBegin(); itr < depotList->MemberEnd(); itr++)
 		{
-			string name;
+			const char* name = nullptr;
 
 			if (!JSON_GetValue(itr->value, "name", JSONFieldType_e::kString, name))
 			{
 				continue;
 			}
 			
-			if (name.compare(targetDepotName) == NULL)
+			if (V_strcmp(targetDepotName, name) == NULL)
 			{
 				outDepotEntry = &itr->value;
 				return true;

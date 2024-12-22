@@ -711,7 +711,7 @@ void CAdvancedSurface::LaunchGame(Forms::Control* pSender)
 
 	pSurface->AppendParameterInternal(svParameter, "-launcher");
 
-	eLaunchMode launchMode = SDKLauncher()->BuildParameter(svParameter);
+	eLaunchMode launchMode = pSurface->BuildParameter(svParameter);
 	uint64_t nProcessorAffinity = pSurface->GetProcessorAffinity(svParameter);
 
 	if (SDKLauncher()->CreateLaunchContext(launchMode, nProcessorAffinity, svParameter.c_str(), "startup_launcher.cfg"))
