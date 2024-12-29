@@ -23,7 +23,7 @@ void(*ServerScriptRegisterEnum_Callback)(CSquirrelVM* const s) = nullptr;
 void(*ClientScriptRegisterEnum_Callback)(CSquirrelVM* const s) = nullptr;
 void(*UIScriptRegisterEnum_Callback)(CSquirrelVM* const s) = nullptr;
 
-// Admin panel functions, NULL on dedicated and client only builds.
+// Admin panel functions, NULL on client only builds.
 void(*UiServerScriptRegister_Callback)(CSquirrelVM* const s) = nullptr;
 void(*UiAdminPanelScriptRegister_Callback)(CSquirrelVM* const s) = nullptr;
 
@@ -68,7 +68,6 @@ bool CSquirrelVM::Init(CSquirrelVM* s, SQCONTEXT context, SQFloat curTime)
 
 		if (UiServerScriptRegister_Callback)
 			UiServerScriptRegister_Callback(s);
-
 		if (UiAdminPanelScriptRegister_Callback)
 			UiAdminPanelScriptRegister_Callback(s);
 
@@ -80,9 +79,9 @@ bool CSquirrelVM::Init(CSquirrelVM* s, SQCONTEXT context, SQFloat curTime)
 
 //---------------------------------------------------------------------------------
 // Purpose: destroys the signal entry list head
-// Input  : *s - 
-//			v - 
-//			f - 
+// Input  : *s -
+//			v -
+//			f -
 // Output : true on success, false otherwise
 //---------------------------------------------------------------------------------
 bool CSquirrelVM::DestroySignalEntryListHead(CSquirrelVM* s, HSQUIRRELVM v, SQFloat f)
@@ -99,8 +98,8 @@ bool CSquirrelVM::DestroySignalEntryListHead(CSquirrelVM* s, HSQUIRRELVM v, SQFl
 
 //---------------------------------------------------------------------------------
 // Purpose: registers a global constant
-// Input  : *name - 
-//			value - 
+// Input  : *name -
+//			value -
 //---------------------------------------------------------------------------------
 SQRESULT CSquirrelVM::RegisterConstant(const SQChar* name, SQInteger value)
 {
@@ -109,7 +108,7 @@ SQRESULT CSquirrelVM::RegisterConstant(const SQChar* name, SQInteger value)
 
 //---------------------------------------------------------------------------------
 // Purpose: runs text as script on the VM
-// Input  : *script - 
+// Input  : *script -
 // Output : true on success, false otherwise
 //---------------------------------------------------------------------------------
 bool CSquirrelVM::Run(const SQChar* const script)
@@ -138,14 +137,14 @@ bool CSquirrelVM::Run(const SQChar* const script)
 
 //---------------------------------------------------------------------------------
 // Purpose: executes a function by handle
-// Input  : hFunction - 
-//			*pArgs - 
-//			nArgs - 
-//			*pReturn - 
-//			hScope - 
+// Input  : hFunction -
+//			*pArgs -
+//			nArgs -
+//			*pReturn -
+//			hScope -
 // Output : SCRIPT_DONE on success, SCRIPT_ERROR otherwise
 //---------------------------------------------------------------------------------
-ScriptStatus_t CSquirrelVM::ExecuteFunction(HSCRIPT hFunction, void** pArgs, unsigned int nArgs, void* pReturn, HSCRIPT hScope)
+ScriptStatus_t CSquirrelVM::ExecuteFunction(HSCRIPT hFunction, ScriptVariant_t* pArgs, unsigned int nArgs, ScriptVariant_t* pReturn, HSCRIPT hScope)
 {
 	const SQObjectPtr* const f = reinterpret_cast<SQObjectPtr*>(hFunction);
 
@@ -188,14 +187,14 @@ ScriptStatus_t CSquirrelVM::ExecuteFunction(HSCRIPT hFunction, void** pArgs, uns
 	return result;
 }
 
-ScriptStatus_t Script_ExecuteFunction(CSquirrelVM* s, HSCRIPT hFunction, void** pArgs, unsigned int nArgs, void* pReturn, HSCRIPT hScope)
+ScriptStatus_t Script_ExecuteFunction(CSquirrelVM* s, HSCRIPT hFunction, ScriptVariant_t* pArgs, unsigned int nArgs, ScriptVariant_t* pReturn, HSCRIPT hScope)
 {
 	return s->ExecuteFunction(hFunction, pArgs, nArgs, pReturn, hScope);
 }
 
 //---------------------------------------------------------------------------------
 // Purpose: executes a code callback
-// Input  : *name - 
+// Input  : *name -
 // Output : true on success, false otherwise
 //---------------------------------------------------------------------------------
 bool CSquirrelVM::ExecuteCodeCallback(const SQChar* const name)
@@ -205,13 +204,13 @@ bool CSquirrelVM::ExecuteCodeCallback(const SQChar* const name)
 
 //---------------------------------------------------------------------------------
 // Purpose: registers a code function
-// Input  : *s - 
-//			*scriptName - 
-//			*nativeName - 
-//			*helpString - 
-//			*returnString - 
-//			*parameters - 
-//			*function - 
+// Input  : *s -
+//			*scriptName -
+//			*nativeName -
+//			*helpString -
+//			*returnString -
+//			*parameters -
+//			*function -
 //---------------------------------------------------------------------------------
 SQRESULT CSquirrelVM::RegisterFunction(const SQChar* scriptName, const SQChar* nativeName,
 	const SQChar* helpString, const SQChar* returnString, const SQChar* parameters, void* function)
@@ -224,9 +223,21 @@ SQRESULT CSquirrelVM::RegisterFunction(const SQChar* scriptName, const SQChar* n
 }
 
 //---------------------------------------------------------------------------------
+// Purpose: Finds a global script function in the squirrelvm
+// Input  : *pszFunctionName -
+//			*pszFunctionSig -
+//			*pUnk -
+// Output : Handle to the found script function
+//---------------------------------------------------------------------------------
+HSCRIPT CSquirrelVM::FindFunction(const char* const pszFunctionName, const char* const pszFunctionSig, void* pUnk)
+{
+	return CSqurrelVM__FindFunction(this, pszFunctionName, pszFunctionSig, pUnk);
+}
+
+//---------------------------------------------------------------------------------
 // Purpose: sets current VM as the global precompiler
-// Input  : *name - 
-//			value - 
+// Input  : *name -
+//			value -
 //---------------------------------------------------------------------------------
 void CSquirrelVM::SetAsCompiler(RSON::Node_t* rson)
 {
@@ -266,8 +277,8 @@ void CSquirrelVM::CompileModScripts()
 		RSON::Node_t* rson = mod->LoadScriptCompileList();
 
 		if (!rson)
-			Error(GetNativeContext(), NO_ERROR, 
-				"%s: Failed to load RSON file '%s'\n", 
+			Error(GetNativeContext(), NO_ERROR,
+				"%s: Failed to load RSON file '%s'\n",
 				__FUNCTION__, mod->GetScriptCompileListPath().Get());
 
 		const char* scriptPathArray[MAX_PRECOMPILED_SCRIPTS];

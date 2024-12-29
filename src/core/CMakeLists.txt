@@ -70,6 +70,11 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE
     "libzstd"
     "liblz4"
 
+    "liblzma"
+    "libzlib"
+    "libbzip2"
+    "libzip"
+
     "libdetours"
     "libcurl"
     "libprotobuf"

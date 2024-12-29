@@ -165,7 +165,6 @@
 #include "DirtySDK/proto/protossl.h"
 #include "DirtySDK/proto/protowebsocket.h"
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // ██╗███╗   ██╗██╗████████╗██╗ █████╗ ██╗     ██╗███████╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗
@@ -272,7 +271,7 @@ void Systems_Init()
 
 #ifndef SERVER_DLL
 	ClientScriptRegister_Callback = Script_RegisterClientFunctions;
-	UiScriptRegister_Callback =  Script_RegisterUIFunctions;
+	UiScriptRegister_Callback = Script_RegisterUIFunctions;
 
 #ifndef CLIENT_DLL
 	UiServerScriptRegister_Callback = Script_RegisterUIServerFunctions;
@@ -337,10 +336,10 @@ void Systems_Shutdown()
 //
 // ██╗   ██╗████████╗██╗██╗     ██╗████████╗██╗   ██╗
 // ██║   ██║╚══██╔══╝██║██║     ██║╚══██╔══╝╚██╗ ██╔╝
-// ██║   ██║   ██║   ██║██║     ██║   ██║    ╚████╔╝ 
-// ██║   ██║   ██║   ██║██║     ██║   ██║     ╚██╔╝  
-// ╚██████╔╝   ██║   ██║███████╗██║   ██║      ██║   
-//  ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝      ╚═╝   
+// ██║   ██║   ██║   ██║██║     ██║   ██║    ╚████╔╝
+// ██║   ██║   ██║   ██║██║     ██║   ██║     ╚██╔╝
+// ╚██████╔╝   ██║   ██║███████╗██║   ██║      ██║
+//  ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝      ╚═╝
 //
 /////////////////////////////////////////////////////
 
@@ -410,8 +409,8 @@ void QuerySystemInfo()
 
 	const CPUInformation& pi = GetCPUInformation();
 
-	Msg(eDLL_T::NONE, "%-25s: '%s'\n","CPU model identifier", pi.m_szProcessorBrand);
-	Msg(eDLL_T::NONE, "%-25s: '%s'\n","CPU vendor tag", pi.m_szProcessorID);
+	Msg(eDLL_T::NONE, "%-25s: '%s'\n", "CPU model identifier", pi.m_szProcessorBrand);
+	Msg(eDLL_T::NONE, "%-25s: '%s'\n", "CPU vendor tag", pi.m_szProcessorID);
 	Msg(eDLL_T::NONE, "%-25s: '%12hhu' ('%2hhu' %s)\n", "CPU core count", pi.m_nPhysicalProcessors, pi.m_nLogicalProcessors, "logical");
 	Msg(eDLL_T::NONE, "%-25s: '%12lld' ('%.1lf' %s)\n", "CPU core speed", pi.m_Speed, f64(pi.m_Speed / 1000000.0), "MHz");
 	Msg(eDLL_T::NONE, "%-20s%s: '%12lu' ('0x%-8X')\n", "L1 cache", "(KiB)", pi.m_nL1CacheSizeKb, pi.m_nL1CacheDesc);
@@ -484,7 +483,7 @@ void DetourInit() // Run the sigscan
 
 	g_SigCache.WriteCache(SIGDB_FILE);
 	g_SigCache.InvalidateMap();
-		}
+}
 
 void DetourAddress() // Test the sigscan results
 {

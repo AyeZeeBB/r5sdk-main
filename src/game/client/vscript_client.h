@@ -10,6 +10,9 @@ namespace VScriptCode
 
 	namespace Ui
 	{
+		SQRESULT CheckForScriptsUpdate(HSQUIRRELVM v);
+		SQRESULT UpdateScripts(HSQUIRRELVM v);
+
 		SQRESULT RefreshServerList(HSQUIRRELVM v);
 		SQRESULT GetServerCount(HSQUIRRELVM v);
 
