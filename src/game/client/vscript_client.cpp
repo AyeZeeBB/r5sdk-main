@@ -530,6 +530,15 @@ namespace VScriptCode
 				}, 0);
 		}
 
+		static void ReportUpdateFailed(HSCRIPT failedCallback, const std::string& message) {
+			g_TaskQueue.Dispatch([failedCallback, message] {
+				Assert(ThreadInMainThread());
+
+				ScriptVariant_t args[1] = { message.c_str() };
+				g_pUIScript->ExecuteFunction(failedCallback, args, SDK_ARRAYSIZE(args), nullptr, 0);
+				}, 0);
+		}
+
 		static bool ExtractZipFile(const std::string& zipFilePath, const std::string& outputDirectory, HSCRIPT progressCallback) {
 			try {
 				ZipArchive::Ptr archive = ZipFile::Open(zipFilePath);
@@ -618,6 +627,7 @@ namespace VScriptCode
 			CUtlString scriptVersion;
 			const HSCRIPT onUpdateProgress = g_pUIScript->FindFunction("onUpdateProgress", "void functionref(int, string)", nullptr);
 			const HSCRIPT onUpdateComplete = g_pUIScript->FindFunction("onUpdateComplete", "void functionref(bool)", nullptr);
+			const HSCRIPT onUpdateFailed = g_pUIScript->FindFunction("onUpdateFailed", "void functionref(string)", nullptr);
 
 			if (onUpdateProgress == nullptr) {
 				Warning(eDLL_T::UI, "[Script Update] Failed to find UI function (onUpdateProgress)\n");
@@ -629,6 +639,11 @@ namespace VScriptCode
 				return;
 			}
 
+			if (onUpdateFailed == nullptr) {
+				Warning(eDLL_T::UI, "[Script Update] Failed to find UI function (onUpdateFailed)\n");
+				return;
+			}
+
 			if (!FetchScriptVersion(scriptVersion))
 				return;
 
@@ -637,12 +652,14 @@ namespace VScriptCode
 			CURL* curl = curl_easy_init();
 			if (!curl) {
 				Warning(eDLL_T::UI, "[Script Update] Failed to initialize CURL\n");
+				ReportUpdateFailed(onUpdateFailed, "Failed to initialize CURL");
 				return;
 			}
 
 			FILE* file = fopen("scripts.zip", "wb");
 			if (!file) {
 				Warning(eDLL_T::UI, "[Script Update] Error opening file for writing\n");
+				ReportUpdateFailed(onUpdateFailed, "Error opening file for writing");
 				curl_easy_cleanup(curl);
 				return;
 			}
@@ -660,6 +677,7 @@ namespace VScriptCode
 
 			if (result != CURLE_OK) {
 				Warning(eDLL_T::UI, "[Script Update] Error downloading script package: %s\n", curl_easy_strerror(result));
+				ReportUpdateFailed(onUpdateFailed, "Error downloading script package");
 				return;
 			}
 
@@ -667,11 +685,13 @@ namespace VScriptCode
 
 			if (!RemoveDirectory("platform/scripts")) {
 				Warning(eDLL_T::UI, "[Script Update] Failed to remove target directory\n");
+				ReportUpdateFailed(onUpdateFailed, "Failed to remove target directory");
 				return;
 			}
 
 			if (!ExtractZipFile("scripts.zip", "platform/", onUpdateProgress)) {
 				Warning(eDLL_T::UI, "[Script Update] Failed to extract script package\n");
+				ReportUpdateFailed(onUpdateFailed, "Failed to extract script package");
 				return;
 			}
 
